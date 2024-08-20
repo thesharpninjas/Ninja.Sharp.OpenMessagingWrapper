@@ -7,6 +7,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ninja.Sharp.OpenMessagingMi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ninja.Sharp.OpenMessagingMiddleware.Tests", "Ninja.Sharp.OpenMessagingMiddleware.Tests\Ninja.Sharp.OpenMessagingMiddleware.Tests.csproj", "{8F029041-8553-46F1-8F43-DEB16065E44B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ninja.Sharp.OpenMessagingMiddleware.App", "Ninja.Sharp.OpenMessagingMiddleware.App\Ninja.Sharp.OpenMessagingMiddleware.App.csproj", "{22963DE6-ADBC-413C-BFB2-6BD6BA9D3758}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{8F029041-8553-46F1-8F43-DEB16065E44B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8F029041-8553-46F1-8F43-DEB16065E44B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8F029041-8553-46F1-8F43-DEB16065E44B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{22963DE6-ADBC-413C-BFB2-6BD6BA9D3758}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22963DE6-ADBC-413C-BFB2-6BD6BA9D3758}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22963DE6-ADBC-413C-BFB2-6BD6BA9D3758}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22963DE6-ADBC-413C-BFB2-6BD6BA9D3758}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
