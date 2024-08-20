@@ -7,11 +7,18 @@ using ActiveMQ.Artemis.Client;
 using Microsoft.Extensions.Configuration;
 using Confluent.Kafka;
 using Ninja.Sharp.OpenMessagingMiddleware.Model.Configuration;
+using Ninja.Sharp.OpenMessagingMiddleware.Factory;
 
 namespace Ninja.Sharp.OpenMessagingMiddleware.Extensions
 {
     public static class ServiceCollectionExtensions
     {
+        private static IServiceCollection AddCommonServices(this IServiceCollection services)
+        {
+            services.AddScoped<IMessageProducerFactory, MessageProducerFactory>();
+            return services;
+        }
+
         public static IMessagingBuilder AddKafkaServices(this IServiceCollection services, KafkaConfig config)
         {
             //return new KafkaBuilder(services, config);
@@ -20,13 +27,14 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Extensions
 
         public static IMessagingBuilder AddArtemisServices(this IServiceCollection services, ArtemisConfig config)
         {
+            services.AddCommonServices();
             return new ArtemisMqBuilder(services, config);
         }
 
         public static IMessagingBuilder AddArtemisServices(this IServiceCollection services, IConfiguration config)
         {
 
-            var settings = config.GetSection("Messaging").Get<ArtemisConfig>();
+            var settings = config.GetSection("Messaging:Artemis").Get<ArtemisConfig>();
             if(settings == null)
             {
                 throw new ArgumentException("Artemis configuration not found");

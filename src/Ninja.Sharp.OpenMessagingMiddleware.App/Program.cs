@@ -11,17 +11,31 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.App
 {
     public static class Program
     {
+        const string topic = "MS00536.AS.AckINPSPRE";
+
+        class Tester
+        {
+            public string Pippo { get; set; } = string.Empty;
+        }
+
         static async Task Main(string[] args)
         {
             var host = CreateHostBuilder(args).Build();
-
 
             // Mettere qui la logica per scegliere cosa runnare
             await host.StartAsync();
 
             var myMessageProducerFactory = host.Services.GetRequiredService<IMessageProducerFactory>();
-            myMessageProducerFactory.Producer("topic1").SendAsync("Hello World!");
-            //await myService.ExecuteAsync(args);
+            
+            while (true)
+            {
+                var id = await myMessageProducerFactory.Producer(topic).SendAsync(new Tester()
+                {
+                    Pippo = Guid.NewGuid().ToString()
+                });
+                Console.WriteLine("Sent message with ID " + id);
+                await Task.Delay(5000);
+            }
         }
 
         //https://refactoring.guru/design-patterns/builder/csharp/example#example-0
@@ -37,16 +51,11 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.App
 
                  var configuration = builder.Build();
 
-                 services
-                    .AddSingleton<IConfiguration>(x => configuration);
-
-                 var artemisBuilder = services.AddArtemisServices(configuration);
-
-                 artemisBuilder
-                    .AddProducer("topic1") // Volendo si può tipizzare
-                    .AddProducer("topic2")
-                    .AddConsumer<MqConsumer>("topic3")
-                    .AddConsumer<AnotherMqConsumer>("topic4");
+                 services = services
+                    .AddArtemisServices(configuration)
+                    .AddProducer(topic) // Volendo si può tipizzare
+                    .AddConsumer<MqConsumer>(topic)
+                    .Build();
 
                  services.BuildServiceProvider();
              });

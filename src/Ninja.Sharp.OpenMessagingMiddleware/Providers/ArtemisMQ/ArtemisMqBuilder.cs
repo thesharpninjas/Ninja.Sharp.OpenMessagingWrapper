@@ -1,6 +1,7 @@
 ﻿using ActiveMQ.Artemis.Client;
 using ActiveMQ.Artemis.Client.AutoRecovering.RecoveryPolicy;
 using ActiveMQ.Artemis.Client.Extensions.DependencyInjection;
+using ActiveMQ.Artemis.Client.Extensions.Hosting;
 using Amqp.Framing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -56,19 +57,26 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ
             // Anonymous Producer. Può essere creato solo uno per i services, il che impedisce l'uso di Artemis multipli
         }
 
-        public IMessagingBuilder AddConsumer<TConsumer>(string topic, MessagingType type = MessagingType.Queue, bool acceptIfInError = true) where TConsumer : class, IMessageConsumer
+        public IMessagingBuilder AddConsumer<TConsumer>(string topic, string subscriber = "", MessagingType type = MessagingType.Queue, bool acceptIfInError = true) where TConsumer : class, IMessageConsumer
         {
             services.AddScoped<IMessageConsumer, TConsumer>();
+            services.AddScoped<TConsumer>();
             activeMqBuilder.AddConsumer(topic,
                    type == MessagingType.Queue ? RoutingType.Anycast : RoutingType.Multicast,
                    async (message, consumer, serviceProvider, _) => await ConsumerHandlerAsync(message, consumer, serviceProvider, topic, typeof(TConsumer), acceptIfInError));
             return this;
         }
 
-        public IMessagingBuilder AddProducer(string topic)
+        public IMessagingBuilder AddProducer(string topic, MessagingType type = MessagingType.Queue)
         {
-            services.AddScoped(x => new ArtemisMqProducer(x.GetRequiredService<ArtemisMqMessageProducer>(), topic));
+            services.AddScoped<IMessageProducer>(x => new ArtemisMqProducer(x.GetRequiredService<ArtemisMqMessageProducer>(), topic));
             return this;
+        }
+
+        public IServiceCollection Build()
+        {
+            services.AddActiveMqHostedService();
+            return services;
         }
 
         #region static
