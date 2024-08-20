@@ -79,24 +79,28 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
         public IMessagingBuilder AddConsumer<TConsumer>(string topic, string subscriber = "", MessagingType type = MessagingType.Queue, bool acceptIfInError = true) where TConsumer : class, IMessageConsumer
         {
             // TODO dare errore se si mette Queue
-
             services.AddScoped<IMessageConsumer, TConsumer>();
+            services.AddScoped<TConsumer>();
 
             IConsumer<string, string> consumer = consumerBuilder.Build();
             consumer.Subscribe(topic);
+            services.AddHostedService((a) => new KafkaBackgroundConsumer(consumer, a.GetRequiredService<TConsumer>(), acceptIfInError));
 
-            // TODO nella Build (a parte), crea backgroundconsumer e fallo partire
             return this;
         }
 
         public IServiceCollection Build()
         {
             return services;
-            // TODO crea ed esegui
-            //KafkaBackgroundConsumer backgroundConsumer = new(
         }
 
-        private class KafkaBackgroundConsumer(IConsumer<string, string> kafkaConsumer, IMessageConsumer consumer, bool acceptIfError) : BackgroundService
+        /// <summary>
+        /// https://github.com/confluentinc/confluent-kafka-dotnet/blob/master/examples/Web/RequestTimeConsumer.cs
+        /// </summary>
+        /// <param name="kafkaConsumer"></param>
+        /// <param name="consumer"></param>
+        /// <param name="acceptIfError"></param>
+        private sealed class KafkaBackgroundConsumer(IConsumer<string, string> kafkaConsumer, IMessageConsumer consumer, bool acceptIfError) : BackgroundService
         {
             protected override Task ExecuteAsync(CancellationToken stoppingToken)
             {
