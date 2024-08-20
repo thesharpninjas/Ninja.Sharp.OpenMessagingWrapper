@@ -1,11 +1,4 @@
-﻿using Ninja.Sharp.OpenMessagingMiddleware.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Ninja.Sharp.OpenMessagingMiddleware.Interfaces
+﻿namespace Ninja.Sharp.OpenMessagingMiddleware.Interfaces
 {
     public static class MessageProducerExtensions
     {

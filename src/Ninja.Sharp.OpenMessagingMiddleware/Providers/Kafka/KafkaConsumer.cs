@@ -1,11 +1,6 @@
 ﻿using Confluent.Kafka;
 using Ninja.Sharp.OpenMessagingMiddleware.Interfaces;
 using Ninja.Sharp.OpenMessagingMiddleware.Model;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
 {
@@ -36,7 +31,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
             }
         }
 
-        public Task ConsumeAsync(Message message)
+        public Task ConsumeAsync(MqMessage message)
         {
             throw new NotImplementedException();
         }

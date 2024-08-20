@@ -1,9 +1,4 @@
 ﻿using Ninja.Sharp.OpenMessagingMiddleware.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ninja.Sharp.OpenMessagingMiddleware.Factory
 {
@@ -15,7 +10,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Factory
         {
             if (myProducers.Count == 0)
             {
-                throw new Exception();
+                throw new ArgumentException("No producer were registered");
             }
 
             if (string.IsNullOrWhiteSpace(topic))
@@ -26,7 +21,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Factory
             var producer = myProducers.Find(p => p.Topic == topic);
             if (producer == null)
             {
-                throw new Exception();
+                throw new ArgumentException("No producer were registered for topic " + topic);
             }
             return producer;
         }

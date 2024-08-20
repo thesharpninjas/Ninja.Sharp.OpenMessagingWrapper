@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ninja.Sharp.OpenMessagingMi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ninja.Sharp.OpenMessagingMiddleware.App", "Ninja.Sharp.OpenMessagingMiddleware.App\Ninja.Sharp.OpenMessagingMiddleware.App.csproj", "{22963DE6-ADBC-413C-BFB2-6BD6BA9D3758}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample", "Sample", "{02714B11-0C17-4F2A-9FBD-5E4053229C20}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,6 +32,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{22963DE6-ADBC-413C-BFB2-6BD6BA9D3758} = {02714B11-0C17-4F2A-9FBD-5E4053229C20}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {345FC9C4-7C9E-46DC-A28D-0723B33D7F63}

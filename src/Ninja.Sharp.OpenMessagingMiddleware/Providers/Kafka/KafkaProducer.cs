@@ -1,5 +1,4 @@
 ﻿using Confluent.Kafka;
-using Ninja.Sharp.OpenMessagingMiddleware.Extensions;
 using Ninja.Sharp.OpenMessagingMiddleware.Interfaces;
 
 namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka

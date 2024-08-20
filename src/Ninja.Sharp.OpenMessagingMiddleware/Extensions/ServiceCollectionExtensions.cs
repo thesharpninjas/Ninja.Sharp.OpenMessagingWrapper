@@ -1,13 +1,9 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using Ninja.Sharp.OpenMessagingMiddleware.Interfaces;
-using Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ;
-using Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka;
-using Ninja.Sharp.OpenMessagingMiddleware.Providers;
-using ActiveMQ.Artemis.Client;
-using Microsoft.Extensions.Configuration;
-using Confluent.Kafka;
-using Ninja.Sharp.OpenMessagingMiddleware.Model.Configuration;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Ninja.Sharp.OpenMessagingMiddleware.Factory;
+using Ninja.Sharp.OpenMessagingMiddleware.Interfaces;
+using Ninja.Sharp.OpenMessagingMiddleware.Model.Configuration;
+using Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ;
 
 namespace Ninja.Sharp.OpenMessagingMiddleware.Extensions
 {
@@ -33,9 +29,8 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Extensions
 
         public static IMessagingBuilder AddArtemisServices(this IServiceCollection services, IConfiguration config)
         {
-
             var settings = config.GetSection("Messaging:Artemis").Get<ArtemisConfig>();
-            if(settings == null)
+            if (settings == null)
             {
                 throw new ArgumentException("Artemis configuration not found");
             }
@@ -46,7 +41,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Extensions
         public static IMessagingBuilder AddKafkaServices(this IServiceCollection services, IConfiguration config)
         {
 
-            var settings = config.GetSection("Messaging").Get<KafkaConfig>();
+            var settings = config.GetSection("Messaging:Kafka").Get<KafkaConfig>();
             if (settings == null)
             {
                 throw new ArgumentException("Kafka configuration not found");

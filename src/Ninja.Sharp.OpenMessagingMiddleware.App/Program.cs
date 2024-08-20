@@ -1,11 +1,10 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Hosting;
 using Ninja.Sharp.OpenMessagingMiddleware.Extensions;
 using Ninja.Sharp.OpenMessagingMiddleware.Interfaces;
-using Ninja.Sharp.OpenMessagingMiddleware.Model.Configuration;
-using Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ;
 
 namespace Ninja.Sharp.OpenMessagingMiddleware.App
 {
@@ -13,10 +12,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.App
     {
         const string topic = "MS00536.AS.AckINPSPRE";
 
-        class Tester
-        {
-            public string Pippo { get; set; } = string.Empty;
-        }
+       
 
         static async Task Main(string[] args)
         {
@@ -26,14 +22,21 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.App
             await host.StartAsync();
 
             var myMessageProducerFactory = host.Services.GetRequiredService<IMessageProducerFactory>();
-            
+            var myDoctor = host.Services.GetRequiredService<HealthCheckService>();
+
+
             while (true)
             {
                 var id = await myMessageProducerFactory.Producer(topic).SendAsync(new Tester()
                 {
-                    Pippo = Guid.NewGuid().ToString()
+                    Property1 = Guid.NewGuid().ToString(),
+                    Property2 = Guid.NewGuid().ToString()
                 });
                 Console.WriteLine("Sent message with ID " + id);
+
+                HealthReport report = await myDoctor.CheckHealthAsync();
+                Console.WriteLine("Status: " + report.Status);
+
                 await Task.Delay(5000);
             }
         }
@@ -54,7 +57,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.App
                  services = services
                     .AddArtemisServices(configuration)
                     .AddProducer(topic) // Volendo si può tipizzare
-                    .AddConsumer<MqConsumer>(topic)
+                    .AddConsumer<LoggerMqConsumer>(topic)
                     .Build();
 
                  services.BuildServiceProvider();
