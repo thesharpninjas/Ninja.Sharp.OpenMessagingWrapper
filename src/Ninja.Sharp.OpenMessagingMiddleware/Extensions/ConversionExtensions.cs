@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using System.Text.Json;
 
-namespace Ninja.Sharp.OpenMessagingMiddleware.Extensions
+namespace System
 {
     public static class ConversionExtensions
     {

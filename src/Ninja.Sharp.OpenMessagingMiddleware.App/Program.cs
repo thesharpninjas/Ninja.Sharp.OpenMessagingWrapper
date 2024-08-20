@@ -38,10 +38,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.App
                  services
                     .AddSingleton<IConfiguration>(x => configuration);
 
-                 var artemisBuilder = services.AddArtemisServices(new ArtemisConfig()
-                 {
-
-                 });
+                 var artemisBuilder = services.AddArtemisServices(configuration);
 
                  artemisBuilder
                     .AddProducer("topic1") // Volendo si può tipizzare

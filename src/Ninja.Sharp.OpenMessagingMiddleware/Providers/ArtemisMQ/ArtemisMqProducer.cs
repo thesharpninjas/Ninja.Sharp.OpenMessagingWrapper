@@ -6,13 +6,13 @@ using Ninja.Sharp.OpenMessagingMiddleware.Interfaces;
 
 namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ
 {
-    internal class ArtemisMqProducer(ArtemisMqMessageProducer producer, string name) : MessageProducer
+    internal class ArtemisMqProducer(ArtemisMqMessageProducer producer, string name) : IMessageProducer
     {
         private readonly ArtemisMqMessageProducer producer = producer;
 
-        public override string Name { get; } = name;
+        public string Name { get; } = name;
 
-        public override async Task SendAsync(string topic, string message)
+        public async Task SendAsync(string topic, string message)
         {
             try
             {

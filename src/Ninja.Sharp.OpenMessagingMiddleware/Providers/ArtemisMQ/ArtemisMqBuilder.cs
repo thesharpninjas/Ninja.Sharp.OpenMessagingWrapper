@@ -1,9 +1,11 @@
 ﻿using ActiveMQ.Artemis.Client;
 using ActiveMQ.Artemis.Client.AutoRecovering.RecoveryPolicy;
 using ActiveMQ.Artemis.Client.Extensions.DependencyInjection;
+using Amqp.Framing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Ninja.Sharp.OpenMessagingMiddleware.Interfaces;
+using Ninja.Sharp.OpenMessagingMiddleware.Model;
 using Ninja.Sharp.OpenMessagingMiddleware.Model.Configuration;
 using System;
 using System.Collections.Generic;
@@ -54,12 +56,48 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ
             // Anonymous Producer. Può essere creato solo uno per i services, il che impedisce l'uso di Artemis multipli
         }
 
-       
 
-        public IBrokerBuilder AddConsumer<TConsumer>(string topic) where TConsumer : IMessageConsumer
+
+        public IBrokerBuilder AddConsumer<TConsumer>(string topic, MessagingType type = MessagingType.Queue, bool acceptIfInError = true) where TConsumer : IMessageConsumer
         {
-            // TODO
+            services.AddScoped<TConsumer, IMessageConsumer>();
+            activeMqBuilder.AddConsumer(topic,
+                   type == MessagingType.Queue ? RoutingType.Anycast : RoutingType.Multicast,
+                   async (message, consumer, serviceProvider, _) => await ConsumerHandlerAsync(message, consumer, serviceProvider, topic, typeof(TConsumer), acceptIfInError));
             return this;
+        }
+
+        internal static async Task ConsumerHandlerAsync(ActiveMQ.Artemis.Client.Message message, IConsumer consumer, IServiceProvider serviceProvider, string queue, Type type, bool acceptIfInError)
+        {
+            bool inError = false;
+            try
+            {
+                string messageString = message.GetBody<string>();
+
+                var selectedConsumer = serviceProvider.GetRequiredService(type) as IMessageConsumer;
+
+                await selectedConsumer!.ConsumeAsync(new Model.Message()
+                {
+                    Body = messageString,
+                    Id = message.MessageId,
+                    GroupId = message.GroupId,
+                });
+            }
+            catch (Exception ex)
+            {
+                inError = true;
+            }
+            finally
+            {
+                if (!inError)
+                {
+                    await consumer.AcceptAsync(message);
+                }
+                else if (acceptIfInError)
+                {
+                    await consumer.AcceptAsync(message);
+                }
+            }
         }
 
         public IBrokerBuilder AddProducer(string topic)

@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 
 namespace Ninja.Sharp.OpenMessagingMiddleware.Model.Configuration
 {
-    internal class OpenMessagingMiddleware
+    internal class Messaging
     {
-
         public ArtemisConfig Artemis { get; set; } = new();
         public KafkaConfig Kafka { get; set; } = new();
     }
