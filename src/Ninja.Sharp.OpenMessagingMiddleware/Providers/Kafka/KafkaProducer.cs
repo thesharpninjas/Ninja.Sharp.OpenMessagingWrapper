@@ -4,13 +4,14 @@ using Ninja.Sharp.OpenMessagingMiddleware.Interfaces;
 
 namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
 {
-    public class KafkaProducer(IProducer<string, string> producer, string name) : IMessageProducer
+    public class KafkaProducer(IProducer<string, string> producer, string topic) : IMessageProducer
     {
         private readonly IProducer<string, string> producer = producer;
+        private readonly string topic = topic;
 
-        public string Name => name;
+        public string Topic => topic;
 
-        public async Task SendAsync(string topic, string message)
+        public async Task<string> SendAsync(string message)
         {
             //TODO aggiungere il caa al message id, come per artemis
             string msgId = Guid.NewGuid().ToString();
@@ -19,6 +20,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
                 Key = msgId,
                 Value = message
             });
+            return msgId;
         }
     }
 }

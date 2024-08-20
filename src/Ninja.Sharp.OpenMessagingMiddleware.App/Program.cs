@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Ninja.Sharp.OpenMessagingMiddleware.Extensions;
+using Ninja.Sharp.OpenMessagingMiddleware.Interfaces;
 using Ninja.Sharp.OpenMessagingMiddleware.Model.Configuration;
 using Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ;
 
@@ -18,7 +19,8 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.App
             // Mettere qui la logica per scegliere cosa runnare
             await host.StartAsync();
 
-            //var myService = host.Services.GetRequiredService<IExecutorService>();
+            var myMessageProducerFactory = host.Services.GetRequiredService<IMessageProducerFactory>();
+            myMessageProducerFactory.Producer("topic1").SendAsync("Hello World!");
             //await myService.ExecuteAsync(args);
         }
 

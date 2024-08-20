@@ -12,18 +12,18 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static IBrokerBuilder AddKafkaServices(this IServiceCollection services, KafkaConfig config)
+        public static IMessagingBuilder AddKafkaServices(this IServiceCollection services, KafkaConfig config)
         {
             //return new KafkaBuilder(services, config);
             return null;
         }
 
-        public static IBrokerBuilder AddArtemisServices(this IServiceCollection services, ArtemisConfig config)
+        public static IMessagingBuilder AddArtemisServices(this IServiceCollection services, ArtemisConfig config)
         {
-            return new ArtemisMQBuilder(services, config);
+            return new ArtemisMqBuilder(services, config);
         }
 
-        public static IBrokerBuilder AddArtemisServices(this IServiceCollection services, IConfiguration config)
+        public static IMessagingBuilder AddArtemisServices(this IServiceCollection services, IConfiguration config)
         {
 
             var settings = config.GetSection("Messaging").Get<ArtemisConfig>();
@@ -35,7 +35,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Extensions
             return services.AddArtemisServices(settings);
         }
 
-        public static IBrokerBuilder AddKafkaServices(this IServiceCollection services, IConfiguration config)
+        public static IMessagingBuilder AddKafkaServices(this IServiceCollection services, IConfiguration config)
         {
 
             var settings = config.GetSection("Messaging").Get<KafkaConfig>();

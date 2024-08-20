@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace Ninja.Sharp.OpenMessagingMiddleware.Interfaces
 {
-    public interface IBrokerBuilder
+    public interface IMessagingBuilder
     {
-        IBrokerBuilder AddConsumer<TConsumer>(string topic, MessagingType type = MessagingType.Queue, bool acceptIfInError = true) where TConsumer : IMessageConsumer;
-        IBrokerBuilder AddProducer(string topic);
+        IMessagingBuilder AddConsumer<TConsumer>(string topic, MessagingType type = MessagingType.Queue, bool acceptIfInError = true) where TConsumer : class, IMessageConsumer;
+        IMessagingBuilder AddProducer(string topic);
     }
 }

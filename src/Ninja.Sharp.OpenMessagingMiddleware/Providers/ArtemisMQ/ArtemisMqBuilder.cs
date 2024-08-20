@@ -17,14 +17,14 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ
 {
 
 
-    internal class ArtemisMQBuilder : IBrokerBuilder
+    internal class ArtemisMqBuilder : IMessagingBuilder
     {
         private readonly static int _retryCount = 2;
         private readonly static int _retryWaitTimeMs = 500;
         private readonly IServiceCollection services;
         private readonly IActiveMqBuilder activeMqBuilder;
 
-        public ArtemisMQBuilder(IServiceCollection services, ArtemisConfig config)
+        public ArtemisMqBuilder(IServiceCollection services, ArtemisConfig config)
         {
             if (!config.Endpoints.Any())
             {
@@ -56,17 +56,22 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ
             // Anonymous Producer. Può essere creato solo uno per i services, il che impedisce l'uso di Artemis multipli
         }
 
-
-
-        public IBrokerBuilder AddConsumer<TConsumer>(string topic, MessagingType type = MessagingType.Queue, bool acceptIfInError = true) where TConsumer : IMessageConsumer
+        public IMessagingBuilder AddConsumer<TConsumer>(string topic, MessagingType type = MessagingType.Queue, bool acceptIfInError = true) where TConsumer : class, IMessageConsumer
         {
-            services.AddScoped<TConsumer, IMessageConsumer>();
+            services.AddScoped<IMessageConsumer, TConsumer>();
             activeMqBuilder.AddConsumer(topic,
                    type == MessagingType.Queue ? RoutingType.Anycast : RoutingType.Multicast,
                    async (message, consumer, serviceProvider, _) => await ConsumerHandlerAsync(message, consumer, serviceProvider, topic, typeof(TConsumer), acceptIfInError));
             return this;
         }
 
+        public IMessagingBuilder AddProducer(string topic)
+        {
+            services.AddScoped(x => new ArtemisMqProducer(x.GetRequiredService<ArtemisMqMessageProducer>(), topic));
+            return this;
+        }
+
+        #region static
         internal static async Task ConsumerHandlerAsync(ActiveMQ.Artemis.Client.Message message, IConsumer consumer, IServiceProvider serviceProvider, string queue, Type type, bool acceptIfInError)
         {
             bool inError = false;
@@ -100,13 +105,6 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ
             }
         }
 
-        public IBrokerBuilder AddProducer(string topic)
-        {
-            services.AddScoped(x => new ArtemisMqProducer(x.GetRequiredService<ArtemisMqMessageProducer>(), topic));
-            return this;
-        }
-
-        #region static
         internal static void ConfigureFactory(IServiceProvider serviceProvider, ConnectionFactory factory, string? id)
         {
             factory.AutomaticRecoveryEnabled = true;

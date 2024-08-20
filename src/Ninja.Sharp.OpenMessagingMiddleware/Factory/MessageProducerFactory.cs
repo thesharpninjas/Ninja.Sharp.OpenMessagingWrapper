@@ -11,19 +11,19 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Factory
     {
         private readonly ICollection<IMessageProducer> producers = producers;
 
-        public IMessageProducer Producer(string name = "")
+        public IMessageProducer Producer(string topic = "")
         {
             if (producers.Count == 0)
             {
                 throw new Exception();
             }
 
-            if (string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(topic))
             {
                 return producers.First();
             }
 
-            var producer = producers.FirstOrDefault(p => p.Name == name);
+            var producer = producers.FirstOrDefault(p => p.Topic == topic);
             if (producer == null)
             {
                 throw new Exception();
