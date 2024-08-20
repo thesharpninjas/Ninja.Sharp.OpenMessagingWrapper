@@ -1,5 +1,4 @@
-﻿using ActiveMQ.Artemis.Client;
-using Ninja.Sharp.OpenMessagingMiddleware.Interfaces;
+﻿using Ninja.Sharp.OpenMessagingMiddleware.Interfaces;
 
 namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ
 {
