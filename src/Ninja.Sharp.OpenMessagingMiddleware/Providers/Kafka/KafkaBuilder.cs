@@ -4,9 +4,7 @@ using Ninja.Sharp.OpenMessagingMiddleware.Model.Configuration;
 using Confluent.Kafka;
 using Ninja.Sharp.OpenMessagingMiddleware.Exceptions;
 using Ninja.Sharp.OpenMessagingMiddleware.Model;
-using ActiveMQ.Artemis.Client.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System.Windows.Input;
 
 namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
 {
@@ -69,17 +67,19 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
             this.services = services;
         }
 
-        public IMessagingBuilder AddProducer(string topic)
+        public IMessagingBuilder AddProducer(string topic, MessagingType type = MessagingType.Queue)
         {
-            // TODO dare errore se si chiama più volte
+            // TODO dare errore se si chiama più volte o se si mette Queue
 
             IProducer<string, string> producer = producerBuilder.Build();
             services.AddScoped<IMessageProducer>(x => new KafkaProducer(producer, topic));
             return this;
         }
 
-        public IMessagingBuilder AddConsumer<TConsumer>(string topic, MessagingType type = MessagingType.Queue, bool acceptIfInError = true) where TConsumer : class, IMessageConsumer
+        public IMessagingBuilder AddConsumer<TConsumer>(string topic, string subscriber = "", MessagingType type = MessagingType.Queue, bool acceptIfInError = true) where TConsumer : class, IMessageConsumer
         {
+            // TODO dare errore se si mette Queue
+
             services.AddScoped<IMessageConsumer, TConsumer>();
 
             IConsumer<string, string> consumer = consumerBuilder.Build();
@@ -87,6 +87,13 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
 
             // TODO nella Build (a parte), crea backgroundconsumer e fallo partire
             return this;
+        }
+
+        public IServiceCollection Build()
+        {
+            return services;
+            // TODO crea ed esegui
+            //KafkaBackgroundConsumer backgroundConsumer = new(
         }
 
         private class KafkaBackgroundConsumer(IConsumer<string, string> kafkaConsumer, IMessageConsumer consumer, bool acceptIfError) : BackgroundService
@@ -108,7 +115,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
                         {
                             try
                             {
-                                await consumer.ConsumeAsync(new Message()
+                                await consumer.ConsumeAsync(new MqMessage()
                                 {
                                     Body = result.Message.Value,
                                     Id = result.Message.Key

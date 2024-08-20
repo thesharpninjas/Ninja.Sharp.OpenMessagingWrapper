@@ -2,9 +2,8 @@
 
 namespace Ninja.Sharp.OpenMessagingMiddleware.Interfaces
 {
-    
     public interface IMessageConsumer
     {
-        Task ConsumeAsync(Message message);
+        Task ConsumeAsync(MqMessage message);
     }
 }

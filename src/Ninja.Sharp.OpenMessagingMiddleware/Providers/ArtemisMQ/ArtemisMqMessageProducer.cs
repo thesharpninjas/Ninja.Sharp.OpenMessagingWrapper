@@ -6,18 +6,21 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ
     {
         private readonly IAnonymousProducer _producer = producer;
 
-        public async Task PublishAsync(string message, string queue, string qmsMessageId = "")
+        public async Task<string> PublishAsync(string message, string queue, string identifier)
         {
             var address = queue;
             var msg = new Message(message);
-            var msgId = Guid.NewGuid().ToString();
-            if(!string.IsNullOrWhiteSpace(qmsMessageId))
+            var msgId = identifier + "." + Guid.NewGuid().ToString();
+            msgId = msgId.Trim('.');
+
+            if (!string.IsNullOrWhiteSpace(identifier))
             {
-                msg.ApplicationProperties["QMSMessageId"] = qmsMessageId;
-            }            
+                msg.ApplicationProperties["QMSMessageId"] = msgId;
+            }
             msg.SetMessageId(msgId);
             msg.SetCorrelationId(msgId);
             await _producer.SendAsync(address, msg);
+            return msgId;
         }
     }
 }

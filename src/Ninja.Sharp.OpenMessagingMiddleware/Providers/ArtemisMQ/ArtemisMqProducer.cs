@@ -12,10 +12,8 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ
         {
             try
             {
-                string caa = string.Empty; // TODO
-                string msgId = Guid.NewGuid().ToString();
-                await producer.PublishAsync(message, topic, $"{caa}.{msgId}");
-                return msgId;
+                string identifier = string.Empty; // TODO
+                return await producer.PublishAsync(message, topic, identifier);
             }
             catch (Exception ex)
             {
@@ -23,6 +21,6 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ
             }
         }
 
-        public string Topic => topic;   
+        public string Topic => topic;
     }
 }

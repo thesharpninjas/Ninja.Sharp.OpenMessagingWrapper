@@ -1,32 +1,28 @@
 ﻿using ActiveMQ.Artemis.Client;
 using ActiveMQ.Artemis.Client.AutoRecovering.RecoveryPolicy;
 using ActiveMQ.Artemis.Client.Extensions.DependencyInjection;
-using Amqp.Framing;
+using ActiveMQ.Artemis.Client.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Ninja.Sharp.OpenMessagingMiddleware.Interfaces;
 using Ninja.Sharp.OpenMessagingMiddleware.Model;
 using Ninja.Sharp.OpenMessagingMiddleware.Model.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ
 {
     internal class ArtemisMqBuilder : IMessagingBuilder
     {
-        private readonly static int _retryCount = 2;
-        private readonly static int _retryWaitTimeMs = 500;
+        private readonly ArtemisConfig config;
         private readonly IServiceCollection services;
         private readonly IActiveMqBuilder activeMqBuilder;
+        private readonly IHealthChecksBuilder healthBuilder;
+        private readonly ICollection<string> topics = [];
 
         public ArtemisMqBuilder(IServiceCollection services, ArtemisConfig config)
         {
-            if (!config.Endpoints.Any())
+            if (config.Endpoints.Count == 0)
             {
-                throw new Exception();
+                throw new ArgumentException("Endpoints not provided in Artemis configuration.");
             }
 
             var endpoints = new List<Endpoint>();
@@ -42,35 +38,49 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ
                 endpoints.Add(endpoint);
             }
 
-            /// Capire come valorizzare una cosa che è solo per inps
-            var caa = "artemis";
-            var id = caa + "_" + Guid.NewGuid().ToString();
+            var identifier = config.Identifier;
+            var id = identifier + "_" + Guid.NewGuid().ToString();
+            id = id.Trim('_');
 
             activeMqBuilder = services.AddActiveMq(id, endpoints);
-            activeMqBuilder = activeMqBuilder.ConfigureConnectionFactory((a, b) => ConfigureFactory(a, b, id));
+            activeMqBuilder = activeMqBuilder.ConfigureConnectionFactory((a, b) => ConfigureFactory(a, b, id, config));
             activeMqBuilder = activeMqBuilder.AddAnonymousProducer<ArtemisMqMessageProducer>();
             this.services = services;
+            this.config = config;
 
-            // Anonymous Producer. Può essere creato solo uno per i services, il che impedisce l'uso di Artemis multipli
+            healthBuilder = services.AddHealthChecks();
         }
 
-        public IMessagingBuilder AddConsumer<TConsumer>(string topic, MessagingType type = MessagingType.Queue, bool acceptIfInError = true) where TConsumer : class, IMessageConsumer
+        public IMessagingBuilder AddConsumer<TConsumer>(string topic, string subscriber = "", MessagingType type = MessagingType.Queue, bool acceptIfInError = true) where TConsumer : class, IMessageConsumer
         {
             services.AddScoped<IMessageConsumer, TConsumer>();
+            services.AddScoped<TConsumer>();
+            topics.Add(topic);
             activeMqBuilder.AddConsumer(topic,
                    type == MessagingType.Queue ? RoutingType.Anycast : RoutingType.Multicast,
                    async (message, consumer, serviceProvider, _) => await ConsumerHandlerAsync(message, consumer, serviceProvider, topic, typeof(TConsumer), acceptIfInError));
             return this;
         }
 
-        public IMessagingBuilder AddProducer(string topic)
+        public IMessagingBuilder AddProducer(string topic, MessagingType type = MessagingType.Queue)
         {
-            services.AddScoped(x => new ArtemisMqProducer(x.GetRequiredService<ArtemisMqMessageProducer>(), topic));
+            topics.Add(topic);
+            services.AddScoped<IMessageProducer>(x => new ArtemisMqProducer(x.GetRequiredService<ArtemisMqMessageProducer>(), topic));
             return this;
         }
 
+        public IServiceCollection Build()
+        {
+            services.AddActiveMqHostedService();
+            foreach (var topic in topics.Distinct())
+            {
+                healthBuilder.AddCheck("Artemis connection for " + topic, new ArtemisMqHealthCheck(config, topic), tags: ["Artemis"]);
+            }
+            return services;
+        }
+
         #region static
-        internal static async Task ConsumerHandlerAsync(ActiveMQ.Artemis.Client.Message message, IConsumer consumer, IServiceProvider serviceProvider, string queue, Type type, bool acceptIfInError)
+        internal static async Task ConsumerHandlerAsync(Message message, IConsumer consumer, IServiceProvider serviceProvider, string queue, Type type, bool acceptIfInError)
         {
             bool inError = false;
             try
@@ -79,14 +89,14 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ
 
                 var selectedConsumer = serviceProvider.GetRequiredService(type) as IMessageConsumer;
 
-                await selectedConsumer!.ConsumeAsync(new Model.Message()
+                await selectedConsumer!.ConsumeAsync(new MqMessage()
                 {
                     Body = messageString,
                     Id = message.MessageId,
                     GroupId = message.GroupId,
                 });
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 inError = true;
             }
@@ -99,13 +109,13 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ
             }
         }
 
-        internal static void ConfigureFactory(IServiceProvider serviceProvider, ConnectionFactory factory, string? id)
+        internal static void ConfigureFactory(IServiceProvider serviceProvider, ConnectionFactory factory, string? id, ArtemisConfig config)
         {
             factory.AutomaticRecoveryEnabled = true;
             factory.ClientIdFactory = () => id;
             factory.RecoveryPolicy = RecoveryPolicyFactory.LinearBackoff(
-                    initialDelay: TimeSpan.FromMilliseconds(_retryWaitTimeMs),
-                    retryCount: _retryCount,
+                    initialDelay: TimeSpan.FromMilliseconds(config.RetryWaitTime),
+                    retryCount: config.Retries,
                     fastFirst: true);
             factory.LoggerFactory = serviceProvider.GetRequiredService<ILoggerFactory>();
         }

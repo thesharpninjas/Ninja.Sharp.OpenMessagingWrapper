@@ -3,8 +3,8 @@
     public static class RetryPolicy
     {
         public static async Task ExecuteAsync(
-            Func<Task> action, 
-            int maxRetries = 5, 
+            Func<Task> action,
+            int maxRetries = 5,
             TimeSpan? delay = null)
         {
             delay ??= TimeSpan.FromSeconds(2);

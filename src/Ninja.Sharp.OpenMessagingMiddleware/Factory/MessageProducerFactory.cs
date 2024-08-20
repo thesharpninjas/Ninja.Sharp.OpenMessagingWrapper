@@ -1,32 +1,27 @@
 ﻿using Ninja.Sharp.OpenMessagingMiddleware.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ninja.Sharp.OpenMessagingMiddleware.Factory
 {
-    internal class MessageProducerFactory(ICollection<IMessageProducer> producers) : IMessageProducerFactory
+    internal class MessageProducerFactory(IEnumerable<IMessageProducer> producers) : IMessageProducerFactory
     {
-        private readonly ICollection<IMessageProducer> producers = producers;
+        private readonly List<IMessageProducer> myProducers = producers.ToList();
 
         public IMessageProducer Producer(string topic = "")
         {
-            if (producers.Count == 0)
+            if (myProducers.Count == 0)
             {
-                throw new Exception();
+                throw new ArgumentException("No producer were registered");
             }
 
             if (string.IsNullOrWhiteSpace(topic))
             {
-                return producers.First();
+                return myProducers[0];
             }
 
-            var producer = producers.FirstOrDefault(p => p.Topic == topic);
+            var producer = myProducers.Find(p => p.Topic == topic);
             if (producer == null)
             {
-                throw new Exception();
+                throw new ArgumentException("No producer were registered for topic " + topic);
             }
             return producer;
         }
