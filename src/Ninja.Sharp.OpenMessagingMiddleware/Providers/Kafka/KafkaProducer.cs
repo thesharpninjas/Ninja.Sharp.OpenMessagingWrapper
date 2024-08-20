@@ -1,31 +1,28 @@
 ﻿using Confluent.Kafka;
+using Ninja.Sharp.OpenMessagingMiddleware.Extensions;
 using Ninja.Sharp.OpenMessagingMiddleware.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
 {
-    public class KafkaProducer : IMessageProducer
+    public class KafkaProducer(IProducer<string, string> producer) : IMessageProducer
     {
-        private readonly IProducer<Null, string> _producer;
-
-        public KafkaProducer(string brokerUri)
-        {
-            var config = new ProducerConfig { BootstrapServers = brokerUri };
-            _producer = new ProducerBuilder<Null, string>(config).Build();
-        }
+        private readonly IProducer<string, string> producer = producer;
 
         public async Task SendAsync(string topic, string message)
         {
-            await _producer.ProduceAsync(topic, new Message<Null, string> { Value = message });
+            string msgId = Guid.NewGuid().ToString();
+            await producer.ProduceAsync(topic, new Message<string, string>
+            {
+                Key = msgId,
+                Value = message
+            });
         }
 
-        ~KafkaProducer()
+        public async Task SendAsync<T>(string topic, T message)
         {
-            _producer.Dispose();
+            string serializedData = message.Serialize();
+
+            await SendAsync(topic, serializedData);
         }
     }
 }
