@@ -3,35 +3,23 @@ using Ninja.Sharp.OpenMessagingMiddleware.Interfaces;
 using Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ;
 using Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka;
 using Ninja.Sharp.OpenMessagingMiddleware.Providers;
+using ActiveMQ.Artemis.Client;
+using Microsoft.Extensions.Configuration;
+using Confluent.Kafka;
+using Ninja.Sharp.OpenMessagingMiddleware.Model.Configuration;
 
 namespace Ninja.Sharp.OpenMessagingMiddleware.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddMessageBus(
-            this IServiceCollection services,
-            string brokerUriOrList,
-            MessageBusProvider implementation,
-            Action<MessageBusOptions> configureOptions)
+        public static IBrokerBuilder AddKafkaServices(this IServiceCollection services, KafkaConfig config)
         {
-            var options = new MessageBusOptions();
-            configureOptions(options);
+            return null;
+        }
 
-            switch (implementation)
-            {
-                case MessageBusProvider.Kafka:
-                    services.AddSingleton<IMessageBus>(sp => new KafkaMessageBus(brokerUriOrList, options));
-                    break;
-
-                case MessageBusProvider.ArtemisMQ:
-                    services.AddSingleton<IMessageBus>(sp => new ArtemisMqMessageBus(brokerUriOrList, options));
-                    break;
-
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(implementation), implementation, null);
-            }
-
-            return services;
+        public static IBrokerBuilder AddArtemisServices(this IServiceCollection services, ArtemisConfig config)
+        {
+            return new ArtemisMQBuilder(services, config);
         }
     }
 }

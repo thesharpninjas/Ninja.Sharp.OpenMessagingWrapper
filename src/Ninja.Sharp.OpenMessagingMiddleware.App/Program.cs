@@ -2,6 +2,9 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Ninja.Sharp.OpenMessagingMiddleware.Extensions;
+using Ninja.Sharp.OpenMessagingMiddleware.Model.Configuration;
+using Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ;
 
 namespace Ninja.Sharp.OpenMessagingMiddleware.App
 {
@@ -35,18 +38,16 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.App
                  services
                     .AddSingleton<IConfiguration>(x => configuration);
 
-                 // Questa parte aggiunge il producer, sempre di tipo anonimo (il topic per ora andrà passato col sendasync)
-                 var messagingBuilder = services
-                    .AddMessagingServices(configuration); // Prende da appsettings o lo fa vuoto se non trova nulla
+                 var artemisBuilder = services.AddArtemisServices(new ArtemisConfig()
+                 {
 
-                 messagingBuilder
-                    .AddKafka(KafkaConfig config) // Prende da oggetto
-                    .AddArtemis(ArtemisConfig config);  // Prende da oggetto
+                 });
 
-                 /// Consumer col delegate
-                 /// Il consumer va messo PER OGNI sistema di messaggistica che ho configurato
-                 /// Aggiungere un booleano throw if unauthorized per capire se lanciare un'eccezione se non ho i permessi
-                 messagingBuilder.AddConsumer<T>("topic"); // where T : IMessageConsumer
+                 artemisBuilder
+                    .AddProducer("topic1") // Volendo si può tipizzare
+                    .AddProducer("topic2")
+                    .AddConsumer<MqConsumer>("topic3")
+                    .AddConsumer<AnotherMqConsumer>("topic4");
 
                  services.BuildServiceProvider();
              });

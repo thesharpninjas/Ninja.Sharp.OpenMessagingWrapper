@@ -2,7 +2,7 @@
 {
     public interface IMessageBus
     {
-        IMessageProducer Producer { get; }
+        MessageProducer Producer { get; }
         IMessageConsumer Consumer { get; }
     }
 }

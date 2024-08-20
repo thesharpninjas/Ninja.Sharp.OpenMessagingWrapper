@@ -1,5 +1,6 @@
 ﻿using Confluent.Kafka;
 using Ninja.Sharp.OpenMessagingMiddleware.Interfaces;
+using Ninja.Sharp.OpenMessagingMiddleware.Model;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,6 +34,11 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
                 var cr = _consumer.Consume();
                 await onMessageReceived(cr.Value);
             }
+        }
+
+        public Task ConsumeAsync(Message message)
+        {
+            throw new NotImplementedException();
         }
 
         ~KafkaConsumer()
