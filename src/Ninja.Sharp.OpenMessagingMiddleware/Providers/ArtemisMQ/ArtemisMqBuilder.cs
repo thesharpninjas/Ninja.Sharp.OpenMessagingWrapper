@@ -15,8 +15,6 @@ using System.Threading.Tasks;
 
 namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ
 {
-
-
     internal class ArtemisMqBuilder : IMessagingBuilder
     {
         private readonly static int _retryCount = 2;
@@ -94,11 +92,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ
             }
             finally
             {
-                if (!inError)
-                {
-                    await consumer.AcceptAsync(message);
-                }
-                else if (acceptIfInError)
+                if (!inError || acceptIfInError)
                 {
                     await consumer.AcceptAsync(message);
                 }

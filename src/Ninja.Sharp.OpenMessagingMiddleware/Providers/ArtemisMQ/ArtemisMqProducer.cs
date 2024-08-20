@@ -1,7 +1,4 @@
-﻿using ActiveMQ.Artemis.Client;
-using Amqp;
-using Ninja.Sharp.OpenMessagingMiddleware.Exceptions;
-using Ninja.Sharp.OpenMessagingMiddleware.Extensions;
+﻿using Ninja.Sharp.OpenMessagingMiddleware.Exceptions;
 using Ninja.Sharp.OpenMessagingMiddleware.Interfaces;
 
 namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ

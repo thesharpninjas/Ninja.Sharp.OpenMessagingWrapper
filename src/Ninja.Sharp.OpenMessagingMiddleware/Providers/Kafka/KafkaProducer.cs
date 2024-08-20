@@ -1,5 +1,4 @@
 ﻿using Confluent.Kafka;
-using Ninja.Sharp.OpenMessagingMiddleware.Extensions;
 using Ninja.Sharp.OpenMessagingMiddleware.Interfaces;
 
 namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
@@ -13,7 +12,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
 
         public async Task<string> SendAsync(string message)
         {
-            //TODO aggiungere il caa al message id, come per artemis
+            // TODO aggiungere il CAA (o equivalente) al message ID, come per Artemis
             string msgId = Guid.NewGuid().ToString();
             await producer.ProduceAsync(topic, new Message<string, string>
             {
