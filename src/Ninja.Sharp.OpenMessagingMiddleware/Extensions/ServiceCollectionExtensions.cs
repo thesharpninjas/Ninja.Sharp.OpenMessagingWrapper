@@ -35,7 +35,6 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Extensions
 
         public static IMessagingBuilder AddKafkaServices(this IServiceCollection services, IConfiguration config)
         {
-
             var settings = config.GetSection("Messaging:Kafka").Get<KafkaConfig>();
             return settings == null ? throw new ArgumentException("Kafka configuration not found") : services.AddKafkaServices(settings);
         }

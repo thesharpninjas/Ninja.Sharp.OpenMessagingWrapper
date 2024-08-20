@@ -4,7 +4,6 @@ using Ninja.Sharp.OpenMessagingMiddleware.Model.Configuration;
 using Confluent.Kafka;
 using Ninja.Sharp.OpenMessagingMiddleware.Exceptions;
 using Ninja.Sharp.OpenMessagingMiddleware.Model;
-using Microsoft.Extensions.Hosting;
 
 namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
 {
@@ -33,6 +32,12 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
                 SecurityProtocol = (SecurityProtocol?)config.SecurityProtocol ?? SecurityProtocol.Plaintext,
                 //Debug = "all"
             };
+            if (producerConfig.SecurityProtocol == SecurityProtocol.SaslSsl)
+            {
+                producerConfig.SaslUsername = config.UserName;
+                producerConfig.SaslPassword = config.Password;
+                producerConfig.SaslMechanism = (SaslMechanism)config.SaslMechanism;
+            }
             producerBuilder = new(producerConfig);
             producerBuilder.SetErrorHandler((a, b) =>
             {
@@ -50,6 +55,12 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
                 SecurityProtocol = (SecurityProtocol?)config.SecurityProtocol ?? SecurityProtocol.Plaintext,
                 //Debug = "all",
             };
+            if (consumerConfig.SecurityProtocol == SecurityProtocol.SaslSsl)
+            {
+                consumerConfig.SaslUsername = config.UserName;
+                consumerConfig.SaslPassword = config.Password;
+                consumerConfig.SaslMechanism = (SaslMechanism)config.SaslMechanism;
+            }
             consumerBuilder = new(consumerConfig);
             consumerBuilder.SetErrorHandler((a, b) =>
             {

@@ -10,9 +10,8 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.App
 {
     public static class Program
     {
-        const string topic = "MS00536.AS.AckINPSPRE";
-
-       
+        //const string topic = "MS00536.AS.AckINPSPRE";
+        const string topic = "hello-world";
 
         static async Task Main(string[] args)
         {
@@ -23,7 +22,6 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.App
 
             var myMessageProducerFactory = host.Services.GetRequiredService<IMessageProducerFactory>();
             var myDoctor = host.Services.GetRequiredService<HealthCheckService>();
-
 
             while (true)
             {
@@ -51,11 +49,11 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.App
                    .AddUserSecrets(typeof(Program).Assembly)
                    .AddEnvironmentVariables();
 
-
                  var configuration = builder.Build();
 
                  services = services
-                    .AddArtemisServices(configuration)
+                    //.AddArtemisServices(configuration)
+                    .AddKafkaServices(configuration)
                     .AddProducer(topic) // Volendo si può tipizzare
                     .AddConsumer<LoggerMqConsumer>(topic)
                     .Build();

@@ -11,6 +11,9 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Model.Configuration
         public KafkaAutoOffsetReset? AutoOffsetReset { get; set; }
         public bool? EnableAutoOffsetStore { get; set; }
         public bool? EnableAutoCommit { get; set; }
+        public string UserName { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public KafkaSaslMechanism SaslMechanism { get; set; }
 
         public class KafkaServer
         {
