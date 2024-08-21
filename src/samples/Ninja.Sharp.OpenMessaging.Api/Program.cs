@@ -18,7 +18,6 @@ builder.Services
     .AddConsumer<LoggerMqConsumer>(artemisTopic)
     .Build();
 
-
 builder.Services
     .AddKafkaServices(builder.Configuration)
     .AddProducer(kafkaTopic)
