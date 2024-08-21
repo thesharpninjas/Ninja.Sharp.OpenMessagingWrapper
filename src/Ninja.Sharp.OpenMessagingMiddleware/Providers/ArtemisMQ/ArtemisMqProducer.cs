@@ -1,23 +1,24 @@
-﻿using Ninja.Sharp.OpenMessagingMiddleware.Exceptions;
-using Ninja.Sharp.OpenMessagingMiddleware.Interfaces;
+﻿using Ninja.Sharp.OpenMessagingMiddleware.Interfaces;
+using Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ.Configuration;
 
 namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ
 {
-    internal class ArtemisMqProducer(ArtemisMqMessageProducer producer, string topic) : IMessageProducer
+    internal class ArtemisMqProducer(ArtemisMqMessageProducer producer, string topic, ArtemisConfig artemisConfig) : IMessageProducer
     {
         private readonly ArtemisMqMessageProducer producer = producer;
         private readonly string topic = topic;
+        private readonly ArtemisConfig artemisConfig = artemisConfig;
 
         public async Task<string> SendAsync(string message)
         {
             try
             {
-                string identifier = string.Empty; // TODO
+                string identifier = artemisConfig.Identifier;
                 return await producer.PublishAsync(message, topic, identifier);
             }
             catch (Exception ex)
             {
-                throw new TransientBrokerException($"Non è stato possibile inviare il messaggio alla coda: {ex.Message}", ex);
+                throw new TaskCanceledException($"Error while sending message: {ex.Message}", ex);
             }
         }
 

@@ -1,6 +1,6 @@
-﻿using Ninja.Sharp.OpenMessagingMiddleware.Model.Enums;
+﻿using Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka.Enums;
 
-namespace Ninja.Sharp.OpenMessagingMiddleware.Model.Configuration
+namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka.Configuration
 {
     public class KafkaConfig
     {

@@ -1,11 +1,11 @@
 ﻿using Apache.NMS;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Ninja.Sharp.OpenMessagingMiddleware.Model.Configuration;
+using Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ.Configuration;
 using System.Diagnostics;
 
-namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ
+namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ.HealthCheck
 {
-    internal class ArtemisMqHealthCheck(ArtemisConfig configuration, string topic) : IHealthCheck
+    internal class ArtemisMqTopicHealthCheck(ArtemisConfig configuration, string topic) : IHealthCheck
     {
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {
@@ -31,32 +31,22 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ
 
                     if (result == t2)
                     {
-                        return new HealthCheckResult(HealthStatus.Degraded, $"Connessione verso Artemis funzionante, ma con tempi di connessione elevati.");
+                        return new HealthCheckResult(HealthStatus.Degraded, $"Connected, but with heavy delay.");
                     }
 
                     stopwatch.Stop();
                     maxMilliseconds = stopwatch.ElapsedMilliseconds > maxMilliseconds ? stopwatch.ElapsedMilliseconds : maxMilliseconds;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    var message = new
-                    {
-                        message = ex.Message,
-                        stackTrace = ex.StackTrace,
-                        inner = ex.InnerException?.Message ?? string.Empty,
-                        uri = connecturi,
-                        //user = endpoint.Username,
-                        //pass = endpoint.Password
-
-                    };
-                    return new HealthCheckResult(HealthStatus.Unhealthy, $"Si sono verificati errori durante la connessione a {endpoint.Host}. {message.Serialize()}");
+                    return new HealthCheckResult(HealthStatus.Unhealthy, $"Error while connectiong to {endpoint.Host}.");
                 }
             }
             if (maxMilliseconds > 5000)
             {
-                return new HealthCheckResult(HealthStatus.Degraded, $"Connessione verso Artemis funzionante, ma con tempi di connessione elevati.");
+                return new HealthCheckResult(HealthStatus.Degraded, $"Connected, but with heavy delay.");
             }
-            return new HealthCheckResult(HealthStatus.Healthy, "Connessione verso Artemis funzionante.");
+            return new HealthCheckResult(HealthStatus.Healthy, "Working!");
         }
     }
 }

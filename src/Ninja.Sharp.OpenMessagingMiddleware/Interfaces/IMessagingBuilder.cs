@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Ninja.Sharp.OpenMessagingMiddleware.Model;
+using Ninja.Sharp.OpenMessagingMiddleware.Model.Enums;
 
 namespace Ninja.Sharp.OpenMessagingMiddleware.Interfaces
 {

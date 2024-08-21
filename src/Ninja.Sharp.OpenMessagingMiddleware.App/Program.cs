@@ -9,8 +9,8 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.App
 {
     public static class Program
     {
-        //const string topic = "MS00536.AS.AckINPSPRE";
-        const string topic = "hello-world";
+        const string topicArtemis = "MS00536.AS.AckINPSPRE";
+        const string topicKafka = "hello-world";
 
         static async Task Main(string[] args)
         {
@@ -24,12 +24,19 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.App
 
             while (true)
             {
-                var id = await myMessageProducerFactory.Producer(topic).SendAsync(new Tester()
+                var idArtemis = await myMessageProducerFactory.Producer(topicArtemis).SendAsync(new Tester()
                 {
                     Property1 = Guid.NewGuid().ToString(),
                     Property2 = Guid.NewGuid().ToString()
                 });
-                Console.WriteLine("Sent message with ID " + id);
+                Console.WriteLine("Sent message with ID " + idArtemis);
+
+                var idKafka = await myMessageProducerFactory.Producer(topicKafka).SendAsync(new Tester()
+                {
+                    Property1 = Guid.NewGuid().ToString(),
+                    Property2 = Guid.NewGuid().ToString()
+                });
+                Console.WriteLine("Sent message with ID " + idKafka);
 
                 HealthReport report = await myDoctor.CheckHealthAsync();
                 Console.WriteLine("Status: " + report.Status);
@@ -50,12 +57,17 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.App
 
                  var configuration = builder.Build();
 
-                 services = services
-                    //.AddArtemisServices(configuration)
-                    .AddKafkaServices(configuration)
-                    .AddProducer(topic) // Volendo si può tipizzare
-                    .AddConsumer<LoggerMqConsumer>(topic)
-                    .Build();
+                 services
+                     .AddArtemisServices(configuration)
+                     .AddProducer(topicArtemis)
+                     .AddConsumer<LoggerMqConsumer>(topicArtemis)
+                     .Build();
+
+                 services
+                     .AddKafkaServices(configuration)
+                     .AddProducer(topicKafka)
+                     .AddConsumer<LoggerMqConsumer>(topicKafka)
+                     .Build();
 
                  services.BuildServiceProvider();
              });

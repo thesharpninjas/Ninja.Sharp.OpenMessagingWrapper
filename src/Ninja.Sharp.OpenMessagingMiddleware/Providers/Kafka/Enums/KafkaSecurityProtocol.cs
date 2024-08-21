@@ -1,4 +1,4 @@
-﻿namespace Ninja.Sharp.OpenMessagingMiddleware.Model.Enums
+﻿namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka.Enums
 {
     public enum KafkaSecurityProtocol
     {

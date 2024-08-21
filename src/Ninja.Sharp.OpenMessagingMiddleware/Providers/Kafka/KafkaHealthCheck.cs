@@ -1,7 +1,7 @@
 ﻿using Confluent.Kafka;
 using Confluent.Kafka.Admin;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Ninja.Sharp.OpenMessagingMiddleware.Model.Configuration;
+using Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka.Configuration;
 using System.Diagnostics;
 
 namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka

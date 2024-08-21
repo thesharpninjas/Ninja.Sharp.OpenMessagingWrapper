@@ -1,9 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Ninja.Sharp.OpenMessagingMiddleware.Interfaces;
-using Ninja.Sharp.OpenMessagingMiddleware.Model.Configuration;
 using Confluent.Kafka;
-using Ninja.Sharp.OpenMessagingMiddleware.Exceptions;
-using Ninja.Sharp.OpenMessagingMiddleware.Model;
+using Ninja.Sharp.OpenMessagingMiddleware.Model.Enums;
+using Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka.Configuration;
 
 namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
 {
@@ -86,8 +85,6 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
 
             return this;
         }
-
-       
 
         public IMessagingBuilder AddConsumer<TConsumer>(string topic, string subscriber = "", MessagingType type = MessagingType.Queue, bool acceptIfInError = true) where TConsumer : class, IMessageConsumer
         {

@@ -1,4 +1,4 @@
-﻿namespace Ninja.Sharp.OpenMessagingMiddleware.Model.Configuration
+﻿namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ.Configuration
 {
     public class ArtemisConfig
     {

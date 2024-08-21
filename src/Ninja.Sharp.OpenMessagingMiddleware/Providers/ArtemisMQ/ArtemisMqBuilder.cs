@@ -6,7 +6,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Ninja.Sharp.OpenMessagingMiddleware.Interfaces;
 using Ninja.Sharp.OpenMessagingMiddleware.Model;
-using Ninja.Sharp.OpenMessagingMiddleware.Model.Configuration;
+using Ninja.Sharp.OpenMessagingMiddleware.Model.Enums;
+using Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ.Configuration;
+using Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ.HealthCheck;
 using Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka;
 using static Confluent.Kafka.ConfigPropertyNames;
 
@@ -51,6 +53,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ
 
             activeMqBuilder = services.AddActiveMq(id, endpoints);
             activeMqBuilder = activeMqBuilder.ConfigureConnectionFactory((a, b) => ConfigureFactory(a, b, id, config));
+            activeMqBuilder = activeMqBuilder.ConfigureConnection(ConfigureConnection);
             activeMqBuilder = activeMqBuilder.AddAnonymousProducer<ArtemisMqMessageProducer>();
             this.services = services;
             this.config = config;
@@ -73,7 +76,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ
 
         public IMessagingBuilder AddProducer(string topic, MessagingType type = MessagingType.Queue)
         {
-            services.AddProducer<IMessageProducer>(topic, (a) => new ArtemisMqProducer(a.GetRequiredService<ArtemisMqMessageProducer>(), topic));
+            services.AddProducer<IMessageProducer>(topic, (a) => new ArtemisMqProducer(a.GetRequiredService<ArtemisMqMessageProducer>(), topic, a.GetRequiredService<ArtemisConfig>()));
             topics.Add(topic);
             return this;
         }
@@ -81,14 +84,25 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ
         public IServiceCollection Build()
         {
             services.AddActiveMqHostedService();
+
+            string[] tags = ["Artemis"];
+            healthBuilder.AddCheck("ArtemisMq", new ArtemisMqConnectionHealthCheck(), tags:tags);
             foreach (var topic in topics.Distinct())
             {
-                healthBuilder.AddCheck("Artemis connection for " + topic, new ArtemisMqHealthCheck(config, topic), tags: ["Artemis"]);
+                healthBuilder.AddCheck("Artemis connection for topic " + topic, new ArtemisMqTopicHealthCheck(config, topic), tags: tags);
             }
             return services;
         }
 
         #region static
+
+        internal static void ConfigureConnection(IServiceProvider _, IConnection connection)
+        {
+            connection.ConnectionClosed += ArtemisMqConnectionHealthCheck.C_ConnectionClosed;
+            connection.ConnectionRecovered += ArtemisMqConnectionHealthCheck.C_ConnectionRecovered;
+            connection.ConnectionRecoveryError += ArtemisMqConnectionHealthCheck.C_ConnectionRecoveryError;
+        }
+
         internal static async Task ConsumerHandlerAsync(Message message, IConsumer consumer, IServiceProvider serviceProvider, Type type, bool acceptIfInError)
         {
             bool inError = false;

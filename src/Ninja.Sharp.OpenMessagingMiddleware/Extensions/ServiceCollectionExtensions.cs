@@ -2,9 +2,10 @@
 using Microsoft.Extensions.DependencyInjection;
 using Ninja.Sharp.OpenMessagingMiddleware.Factory;
 using Ninja.Sharp.OpenMessagingMiddleware.Interfaces;
-using Ninja.Sharp.OpenMessagingMiddleware.Model.Configuration;
 using Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ;
+using Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ.Configuration;
 using Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka;
+using Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka.Configuration;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
