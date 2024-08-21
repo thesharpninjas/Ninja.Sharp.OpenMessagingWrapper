@@ -31,7 +31,7 @@ namespace Ninja.Sharp.OpenMessaging.Providers.Kafka
             }
         }
 
-        public Task ConsumeAsync(MqMessage message)
+        public Task ConsumeAsync(IncomingMessage message)
         {
             throw new NotImplementedException();
         }

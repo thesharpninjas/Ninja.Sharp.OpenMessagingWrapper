@@ -63,18 +63,18 @@ namespace Ninja.Sharp.OpenMessaging.Providers.ArtemisMQ
             }
         }
 
-        public IMessagingBuilder AddConsumer<TConsumer>(string topic, string subscriber = "", MessagingType type = MessagingType.Queue, bool acceptIfInError = true) where TConsumer : class, IMessageConsumer
+        public IMessagingBuilder AddConsumer<TConsumer>(string topic, string subscriber = "", Channel type = Channel.Queue, bool acceptIfInError = true) where TConsumer : class, IMessageConsumer
         {
             services.AddScoped<IMessageConsumer, TConsumer>();
             services.AddScoped<TConsumer>();
             topics.Add(topic);
             activeMqBuilder.AddConsumer(topic,
-                   type == MessagingType.Queue ? RoutingType.Anycast : RoutingType.Multicast,
+                   type == Channel.Queue ? RoutingType.Anycast : RoutingType.Multicast,
                    async (message, consumer, serviceProvider, _) => await ConsumerHandlerAsync(message, consumer, serviceProvider, typeof(TConsumer), acceptIfInError));
             return this;
         }
 
-        public IMessagingBuilder AddProducer(string topic, MessagingType type = MessagingType.Queue)
+        public IMessagingBuilder AddProducer(string topic, Channel type = Channel.Queue)
         {
             services.AddProducer<IMessageProducer>(topic, (a) => new ArtemisMqProducer(a.GetRequiredService<ArtemisMqMessageProducer>(), topic, a.GetRequiredService<ArtemisConfig>()));
             topics.Add(topic);
@@ -115,7 +115,7 @@ namespace Ninja.Sharp.OpenMessaging.Providers.ArtemisMQ
 
                 var selectedConsumer = serviceProvider.TryGetRequiredService(type) as IMessageConsumer;
 
-                await selectedConsumer!.ConsumeAsync(new MqMessage()
+                await selectedConsumer!.ConsumeAsync(new IncomingMessage()
                 {
                     Body = messageString,
                     Id = message.MessageId,

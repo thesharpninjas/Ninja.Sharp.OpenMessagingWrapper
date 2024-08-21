@@ -3,7 +3,7 @@
     /// <summary>
     /// Defines the messaging channel
     /// </summary>
-    public enum MessagingType
+    public enum Channel
     {
         /// <summary>
         /// Queue

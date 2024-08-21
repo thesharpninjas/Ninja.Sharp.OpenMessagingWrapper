@@ -77,7 +77,7 @@ namespace Ninja.Sharp.OpenMessaging.Providers.Kafka
             }
         }
 
-        public IMessagingBuilder AddProducer(string topic, MessagingType type = MessagingType.Queue)
+        public IMessagingBuilder AddProducer(string topic, Channel type = Channel.Queue)
         {
             IProducer<string, string> producer = producerBuilder.Build();
             services.AddProducer<IMessageProducer>(topic, (a) => new KafkaProducer(producer, topic, configuration));
@@ -87,7 +87,7 @@ namespace Ninja.Sharp.OpenMessaging.Providers.Kafka
             return this;
         }
 
-        public IMessagingBuilder AddConsumer<TConsumer>(string topic, string subscriber = "", MessagingType type = MessagingType.Queue, bool acceptIfInError = true) where TConsumer : class, IMessageConsumer
+        public IMessagingBuilder AddConsumer<TConsumer>(string topic, string subscriber = "", Channel type = Channel.Queue, bool acceptIfInError = true) where TConsumer : class, IMessageConsumer
         {
             IConsumer<string, string> consumer = consumerBuilder.Build();
             consumer.Subscribe(topic);

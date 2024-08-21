@@ -26,7 +26,7 @@ namespace Ninja.Sharp.OpenMessaging.Providers.Kafka
                     {
                         try
                         {
-                            await consumer.ConsumeAsync(new MqMessage()
+                            await consumer.ConsumeAsync(new IncomingMessage()
                             {
                                 Body = result.Message.Value,
                                 Id = result.Message.Key

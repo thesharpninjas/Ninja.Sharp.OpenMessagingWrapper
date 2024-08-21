@@ -3,7 +3,7 @@
     /// <summary>
     /// Defines structural data for the delivered message
     /// </summary>
-    public class MqMessage
+    public class IncomingMessage
     {
         /// <summary>
         /// The message ID

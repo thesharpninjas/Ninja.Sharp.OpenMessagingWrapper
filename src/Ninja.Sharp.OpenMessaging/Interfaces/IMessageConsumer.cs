@@ -12,6 +12,6 @@ namespace Ninja.Sharp.OpenMessaging.Interfaces
         /// </summary>
         /// <param name="message">The delivered message</param>
         /// <returns></returns>
-        Task ConsumeAsync(MqMessage message);
+        Task ConsumeAsync(IncomingMessage message);
     }
 }

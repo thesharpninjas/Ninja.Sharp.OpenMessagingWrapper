@@ -18,7 +18,7 @@ namespace Ninja.Sharp.OpenMessaging.Interfaces
         /// <param name="type">The messaging type, queue or broadcast (event)</param>
         /// <param name="acceptIfInError">If true, even when an exception is thrown by the TConsumer, the message will be flagged as received</param>
         /// <returns>The builder instance</returns>
-        IMessagingBuilder AddConsumer<TConsumer>(string topic, string subscriber = "", MessagingType type = MessagingType.Queue, bool acceptIfInError = true) where TConsumer : class, IMessageConsumer;
+        IMessagingBuilder AddConsumer<TConsumer>(string topic, string subscriber = "", Channel type = Channel.Queue, bool acceptIfInError = true) where TConsumer : class, IMessageConsumer;
 
         /// <summary>
         /// Adds a producer to the specified topic.
@@ -26,7 +26,7 @@ namespace Ninja.Sharp.OpenMessaging.Interfaces
         /// <param name="topic">The topic where you have to send messages</param>
         /// <param name="type">The messaging type, queue or broadcast (event)</param>
         /// <returns>The builder instance</returns>
-        IMessagingBuilder AddProducer(string topic, MessagingType type = MessagingType.Queue);
+        IMessagingBuilder AddProducer(string topic, Channel type = Channel.Queue);
 
         /// <summary>
         /// Builder method. Creates listeners and providers, and adds the desired services to the collection
