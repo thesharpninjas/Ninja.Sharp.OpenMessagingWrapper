@@ -20,14 +20,12 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.App
             // Mettere qui la logica per scegliere cosa runnare
             await host.StartAsync();
 
-            //var myMessageProducerFactory = host.Services.GetRequiredService<IMessageProducerFactory>();
-            var myMessageProducer = host.Services.GetRequiredService<IMessageProducer>();
+            var myMessageProducerFactory = host.Services.GetRequiredService<IMessageProducerFactory>();
             //var myDoctor = host.Services.GetRequiredService<HealthCheckService>();
 
             while (true)
             {
-                //var id = await myMessageProducerFactory.Producer(topic).SendAsync(new Tester()
-                var id = await myMessageProducer.SendAsync(new Tester()
+                var id = await myMessageProducerFactory.Producer(topic).SendAsync(new Tester()
                 {
                     Property1 = Guid.NewGuid().ToString(),
                     Property2 = Guid.NewGuid().ToString()

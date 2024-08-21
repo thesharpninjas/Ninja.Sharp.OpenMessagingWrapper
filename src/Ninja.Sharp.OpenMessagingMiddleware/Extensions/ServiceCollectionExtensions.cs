@@ -30,6 +30,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Extensions
 
         public static IMessagingBuilder AddKafkaServices(this IServiceCollection services, KafkaConfig config)
         {
+            services.AddCommonServices();
             return new KafkaBuilder(services, config);
         }
 
