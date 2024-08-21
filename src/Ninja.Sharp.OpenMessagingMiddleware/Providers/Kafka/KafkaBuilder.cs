@@ -14,7 +14,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
         private readonly ProducerBuilder<string, string> producerBuilder;
         private readonly ConsumerBuilder<string, string> consumerBuilder;
         private readonly IHealthChecksBuilder healthBuilder;
-        private readonly ICollection<string> topics = [];
+        private readonly ICollection<string> producerTopics = [];
 
         public KafkaBuilder(IServiceCollection services, KafkaConfig config)
         {
@@ -80,8 +80,10 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
         public IMessagingBuilder AddProducer(string topic, MessagingType type = MessagingType.Queue)
         {
             IProducer<string, string> producer = producerBuilder.Build();
-
             services.AddProducer<IMessageProducer>(topic, (a) => new KafkaProducer(producer, topic));
+
+            producerTopics.Add(topic);
+
             return this;
         }
 
@@ -89,12 +91,11 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
 
         public IMessagingBuilder AddConsumer<TConsumer>(string topic, string subscriber = "", MessagingType type = MessagingType.Queue, bool acceptIfInError = true) where TConsumer : class, IMessageConsumer
         {
-            // TODO dare errore se si mette Queue
-            services.AddScoped<IMessageConsumer, TConsumer>();
-            services.AddScoped<TConsumer>();
-
             IConsumer<string, string> consumer = consumerBuilder.Build();
             consumer.Subscribe(topic);
+
+            services.AddScoped<IMessageConsumer, TConsumer>();
+            services.AddScoped<TConsumer>();
             services.AddHostedService((a) => new KafkaBackgroundConsumer(consumer, a.TryGetRequiredService<TConsumer>(), acceptIfInError));
 
             return this;
@@ -102,7 +103,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
 
         public IServiceCollection Build()
         {
-            foreach (string topic in topics.Distinct())
+            foreach (string topic in producerTopics.Distinct())
             {
                 healthBuilder.AddCheck($"Kafka connection for topic {topic}", new KafkaHealthCheck(configuration, topic), tags: ["Kafka"]);
             }
