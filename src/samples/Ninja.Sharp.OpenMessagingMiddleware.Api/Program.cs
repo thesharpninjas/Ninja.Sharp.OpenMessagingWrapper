@@ -1,4 +1,3 @@
-using Microsoft.Extensions.Configuration;
 using Ninja.Sharp.OpenMessagingMiddleware.Api;
 
 var builder = WebApplication.CreateBuilder(args);

@@ -4,9 +4,9 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka.Configuration;
 using System.Diagnostics;
 
-namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
+namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka.HealthCheck
 {
-    internal class KafkaHealthCheck(KafkaConfig configuration, string topic) : IHealthCheck
+    internal class KafkaTopicHealthCheck(KafkaConfig configuration, string topic) : IHealthCheck
     {
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
         {
@@ -33,7 +33,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
                 AdminClientBuilder adminClientBuilder = new(adminClientConfig);
                 IAdminClient adminClient = adminClientBuilder.Build();
 
-                DescribeTopicsResult describeTopicsResult = await adminClient.DescribeTopicsAsync(TopicCollection.OfTopicNames([topic]));
+                DescribeTopicsResult describeTopicsResult = await adminClient.DescribeTopicsAsync(TopicCollection.OfTopicNames([topic]), new DescribeTopicsOptions { RequestTimeout = TimeSpan.FromSeconds(10) });
                 List<TopicDescription> descriptions = describeTopicsResult.TopicDescriptions;
                 if (descriptions.Count != 1)
                 {

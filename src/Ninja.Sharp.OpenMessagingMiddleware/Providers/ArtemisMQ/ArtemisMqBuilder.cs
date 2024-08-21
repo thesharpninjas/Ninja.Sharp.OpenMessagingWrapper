@@ -9,8 +9,6 @@ using Ninja.Sharp.OpenMessagingMiddleware.Model;
 using Ninja.Sharp.OpenMessagingMiddleware.Model.Enums;
 using Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ.Configuration;
 using Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ.HealthCheck;
-using Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka;
-using static Confluent.Kafka.ConfigPropertyNames;
 
 namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ
 {
@@ -19,7 +17,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ
         private readonly ArtemisConfig config;
         private readonly IServiceCollection services;
         private readonly IActiveMqBuilder activeMqBuilder;
-        private readonly IHealthChecksBuilder healthBuilder;
+        private readonly IHealthChecksBuilder? healthBuilder;
         private readonly ICollection<string> topics = [];
 
         public ArtemisMqBuilder(IServiceCollection services, ArtemisConfig config)
@@ -57,10 +55,12 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ
             activeMqBuilder = activeMqBuilder.AddAnonymousProducer<ArtemisMqMessageProducer>();
             this.services = services;
             this.config = config;
-
             services.AddSingleton(config);
 
-            healthBuilder = services.AddHealthChecks();
+            if (config.HealthChecks)
+            {
+                healthBuilder = services.AddHealthChecks();
+            }
         }
 
         public IMessagingBuilder AddConsumer<TConsumer>(string topic, string subscriber = "", MessagingType type = MessagingType.Queue, bool acceptIfInError = true) where TConsumer : class, IMessageConsumer
@@ -85,11 +85,14 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ
         {
             services.AddActiveMqHostedService();
 
-            string[] tags = ["Artemis"];
-            healthBuilder.AddCheck("ArtemisMq", new ArtemisMqConnectionHealthCheck(), tags:tags);
-            foreach (var topic in topics.Distinct())
+            if (config.HealthChecks && healthBuilder != null)
             {
-                healthBuilder.AddCheck("Artemis connection for topic " + topic, new ArtemisMqTopicHealthCheck(config, topic), tags: tags);
+                string[] tags = ["Artemis"];
+                healthBuilder.AddCheck("ArtemisMq", new ArtemisMqConnectionHealthCheck(), tags: tags);
+                foreach (var topic in topics.Distinct())
+                {
+                    healthBuilder.AddCheck("Artemis connection for topic " + topic, new ArtemisMqTopicHealthCheck(config, topic), tags: tags);
+                }
             }
             return services;
         }

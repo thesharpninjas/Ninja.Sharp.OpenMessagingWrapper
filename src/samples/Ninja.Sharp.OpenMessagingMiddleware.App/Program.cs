@@ -10,7 +10,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.App
     public static class Program
     {
         const string topicArtemis = "MS00536.AS.AckINPSPRE";
-        const string topicKafka = "hello-world";
+        const string topicKafka = "myFirstTopic";
 
         static async Task Main(string[] args)
         {
@@ -30,13 +30,19 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.App
                     Property2 = Guid.NewGuid().ToString()
                 });
                 Console.WriteLine("Sent message with ID " + idArtemis);
-
-                var idKafka = await myMessageProducerFactory.Producer(topicKafka).SendAsync(new Tester()
+                try
                 {
-                    Property1 = Guid.NewGuid().ToString(),
-                    Property2 = Guid.NewGuid().ToString()
-                });
-                Console.WriteLine("Sent message with ID " + idKafka);
+                    var idKafka = await myMessageProducerFactory.Producer(topicKafka).SendAsync(new Tester()
+                    {
+                        Property1 = Guid.NewGuid().ToString(),
+                        Property2 = Guid.NewGuid().ToString()
+                    });
+                    Console.WriteLine("Sent message with ID " + idKafka);
+                }
+                catch (Exception ex)
+                {
+                    // ignora
+                }
 
                 HealthReport report = await myDoctor.CheckHealthAsync();
                 Console.WriteLine("Status: " + report.Status);
