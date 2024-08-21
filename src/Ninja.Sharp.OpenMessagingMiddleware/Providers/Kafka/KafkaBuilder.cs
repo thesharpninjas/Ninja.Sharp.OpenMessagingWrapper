@@ -3,6 +3,8 @@ using Ninja.Sharp.OpenMessagingMiddleware.Interfaces;
 using Confluent.Kafka;
 using Ninja.Sharp.OpenMessagingMiddleware.Model.Enums;
 using Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka.Configuration;
+using Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka.HealthCheck;
+using Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ.HealthCheck;
 
 namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
 {
@@ -46,8 +48,8 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
                 producerConfig.SaslPassword = config.Password;
                 producerConfig.SaslMechanism = (SaslMechanism)config.SaslMechanism;
             }
-
             producerBuilder = new(producerConfig);
+            producerBuilder.SetErrorHandler(KafkaConnectionHealthCheck.KafkaProducerErrorHandler);
 
             ConsumerConfig consumerConfig = new()
             {
@@ -65,8 +67,8 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
                 consumerConfig.SaslPassword = config.Password;
                 consumerConfig.SaslMechanism = (SaslMechanism)config.SaslMechanism;
             }
-
             consumerBuilder = new(consumerConfig);
+            consumerBuilder.SetErrorHandler(KafkaConnectionHealthCheck.KafkaConsumerErrorHandler);
 
             this.services = services;
 
@@ -98,9 +100,11 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
 
         public IServiceCollection Build()
         {
+            string[] tags = ["Kafka"];
+            healthBuilder.AddCheck("Kafka", new KafkaConnectionHealthCheck(), tags: tags);
             foreach (string topic in producerTopics.Distinct())
             {
-                healthBuilder.AddCheck($"Kafka connection for topic {topic}", new KafkaHealthCheck(configuration, topic), tags: ["Kafka"]);
+                healthBuilder.AddCheck($"Kafka connection for topic {topic}", new KafkaTopicHealthCheck(configuration, topic), tags: tags);
             }
             return services;
         }

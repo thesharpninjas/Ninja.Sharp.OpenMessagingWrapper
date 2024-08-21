@@ -12,13 +12,14 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
 
         public async Task<string> SendAsync(string message)
         {
+            CancellationToken cancellationToken = new CancellationTokenSource(5000).Token;
             // TODO aggiungere il CAA (o equivalente) al message ID, come per Artemis
             string msgId = Guid.NewGuid().ToString();
             await producer.ProduceAsync(topic, new Message<string, string>
             {
                 Key = msgId,
                 Value = message
-            });
+            }, cancellationToken);
             return msgId;
         }
     }

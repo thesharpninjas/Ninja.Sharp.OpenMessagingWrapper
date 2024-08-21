@@ -10,7 +10,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.App
     public static class Program
     {
         const string topicArtemis = "MS00536.AS.AckINPSPRE";
-        const string topicKafka = "hello-world";
+        const string topicKafka = "myFirstTopic";
 
         static async Task Main(string[] args)
         {
@@ -24,19 +24,25 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.App
 
             while (true)
             {
-                var idArtemis = await myMessageProducerFactory.Producer(topicArtemis).SendAsync(new Tester()
+                //var idArtemis = await myMessageProducerFactory.Producer(topicArtemis).SendAsync(new Tester()
+                //{
+                //    Property1 = Guid.NewGuid().ToString(),
+                //    Property2 = Guid.NewGuid().ToString()
+                //});
+                //Console.WriteLine("Sent message with ID " + idArtemis);
+                try
                 {
-                    Property1 = Guid.NewGuid().ToString(),
-                    Property2 = Guid.NewGuid().ToString()
-                });
-                Console.WriteLine("Sent message with ID " + idArtemis);
-
-                var idKafka = await myMessageProducerFactory.Producer(topicKafka).SendAsync(new Tester()
+                    var idKafka = await myMessageProducerFactory.Producer(topicKafka).SendAsync(new Tester()
+                    {
+                        Property1 = Guid.NewGuid().ToString(),
+                        Property2 = Guid.NewGuid().ToString()
+                    });
+                    Console.WriteLine("Sent message with ID " + idKafka);
+                }
+                catch (Exception ex)
                 {
-                    Property1 = Guid.NewGuid().ToString(),
-                    Property2 = Guid.NewGuid().ToString()
-                });
-                Console.WriteLine("Sent message with ID " + idKafka);
+                    // ignora
+                }
 
                 HealthReport report = await myDoctor.CheckHealthAsync();
                 Console.WriteLine("Status: " + report.Status);
@@ -57,11 +63,11 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.App
 
                  var configuration = builder.Build();
 
-                 services
-                     .AddArtemisServices(configuration)
-                     .AddProducer(topicArtemis)
-                     .AddConsumer<LoggerMqConsumer>(topicArtemis)
-                     .Build();
+                 //services
+                 //    .AddArtemisServices(configuration)
+                 //    .AddProducer(topicArtemis)
+                 //    .AddConsumer<LoggerMqConsumer>(topicArtemis)
+                 //    .Build();
 
                  services
                      .AddKafkaServices(configuration)

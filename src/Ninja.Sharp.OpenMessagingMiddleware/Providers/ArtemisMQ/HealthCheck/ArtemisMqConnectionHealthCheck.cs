@@ -1,8 +1,5 @@
 ﻿using ActiveMQ.Artemis.Client;
-using Apache.NMS;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ.Configuration;
-using System.Diagnostics;
 
 namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ.HealthCheck
 {

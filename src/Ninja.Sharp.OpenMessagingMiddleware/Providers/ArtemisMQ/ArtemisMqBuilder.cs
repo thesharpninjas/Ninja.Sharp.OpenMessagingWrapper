@@ -9,8 +9,6 @@ using Ninja.Sharp.OpenMessagingMiddleware.Model;
 using Ninja.Sharp.OpenMessagingMiddleware.Model.Enums;
 using Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ.Configuration;
 using Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ.HealthCheck;
-using Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka;
-using static Confluent.Kafka.ConfigPropertyNames;
 
 namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ
 {
@@ -86,7 +84,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ
             services.AddActiveMqHostedService();
 
             string[] tags = ["Artemis"];
-            healthBuilder.AddCheck("ArtemisMq", new ArtemisMqConnectionHealthCheck(), tags:tags);
+            healthBuilder.AddCheck("ArtemisMq", new ArtemisMqConnectionHealthCheck(), tags: tags);
             foreach (var topic in topics.Distinct())
             {
                 healthBuilder.AddCheck("Artemis connection for topic " + topic, new ArtemisMqTopicHealthCheck(config, topic), tags: tags);
