@@ -2,7 +2,6 @@
 using ActiveMQ.Artemis.Client.AutoRecovering.RecoveryPolicy;
 using ActiveMQ.Artemis.Client.Extensions.DependencyInjection;
 using ActiveMQ.Artemis.Client.Extensions.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Ninja.Sharp.OpenMessagingMiddleware.Interfaces;
@@ -86,7 +85,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ
         {
             services.AddActiveMqHostedService();
 
-            if (config.HealthChecks)
+            if (config.HealthChecks && healthBuilder != null)
             {
                 string[] tags = ["Artemis"];
                 healthBuilder.AddCheck("ArtemisMq", new ArtemisMqConnectionHealthCheck(), tags: tags);

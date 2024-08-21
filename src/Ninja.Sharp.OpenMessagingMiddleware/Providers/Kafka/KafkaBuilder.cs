@@ -101,7 +101,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
 
         public IServiceCollection Build()
         {
-            if (configuration.HealthChecks)
+            if (configuration.HealthChecks && healthBuilder != null)
             {
                 string[] tags = ["Kafka"];
                 healthBuilder.AddCheck("Kafka", new KafkaConnectionHealthCheck(), tags: tags);
