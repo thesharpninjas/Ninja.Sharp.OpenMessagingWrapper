@@ -9,10 +9,12 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
     {
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            return StartConsumerLoop(stoppingToken);
+            Thread thread = new(async () => await StartConsumerLoopAsync(stoppingToken));
+            thread.Start();
+            return Task.CompletedTask;
         }
 
-        private async Task StartConsumerLoop(CancellationToken stoppingToken)
+        private async Task StartConsumerLoopAsync(CancellationToken stoppingToken)
         {
             try
             {
