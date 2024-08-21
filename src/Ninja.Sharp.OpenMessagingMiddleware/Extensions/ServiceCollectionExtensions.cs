@@ -6,7 +6,7 @@ using Ninja.Sharp.OpenMessagingMiddleware.Model.Configuration;
 using Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ;
 using Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka;
 
-namespace Ninja.Sharp.OpenMessagingMiddleware.Extensions
+namespace Microsoft.Extensions.DependencyInjection
 {
     public static class ServiceCollectionExtensions
     {
@@ -37,6 +37,18 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Extensions
         {
             var settings = config.GetSection("Messaging:Kafka").Get<KafkaConfig>();
             return settings == null ? throw new ArgumentException("Kafka configuration not found") : services.AddKafkaServices(settings);
+        }
+
+        internal static IServiceCollection AddProducer<IMessageProducer>(this IServiceCollection services, string topic, Func<IServiceProvider, IMessageProducer> implementationFactory) where IMessageProducer : class
+        {
+            if (services.Any(x => x.ServiceKey?.ToString() == topic))
+            {
+                throw new ArgumentException($"Producer for topic {topic} already exists");
+            }
+
+            services.AddScoped(implementationFactory);
+            services.AddKeyedScoped(topic, (x, y) => implementationFactory.Invoke(x));
+            return services;
         }
     }
 }

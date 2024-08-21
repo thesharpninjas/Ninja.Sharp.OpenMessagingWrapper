@@ -1,6 +1,5 @@
 ﻿using Apache.NMS;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
-using Ninja.Sharp.OpenMessagingMiddleware.Extensions;
 using Ninja.Sharp.OpenMessagingMiddleware.Model.Configuration;
 using System.Diagnostics;
 

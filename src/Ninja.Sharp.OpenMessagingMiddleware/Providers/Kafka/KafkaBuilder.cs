@@ -17,12 +17,17 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
         {
             if (config.BootstrapServers.Count == 0)
             {
-                throw new TransientBrokerException("Nessun bootstrap server configurato");
+                throw new ArgumentException("There are no bootstrap servers configured");
             }
 
-            // capire come valorizzare una cosa che è solo per INPS
-            string caa = "kafka";
-            string id = caa + "_" + Guid.NewGuid().ToString();
+            if (services.Any(x => x.ServiceType == typeof(KafkaConfig)))
+            {
+                throw new ArgumentException("You cannot add more than one Artemis service.");
+            }
+
+            string id = config.Identifier + "_" + Guid.NewGuid().ToString();
+            id = id.TrimStart('_');
+
             string bootstrapServers = string.Join(',', config.BootstrapServers.Select(s => $"{s.Host}:{s.Port}"));
             ProducerConfig producerConfig = new()
             {
@@ -32,17 +37,15 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
                 SecurityProtocol = (SecurityProtocol?)config.SecurityProtocol ?? SecurityProtocol.Plaintext,
                 //Debug = "all"
             };
+
             if (producerConfig.SecurityProtocol == SecurityProtocol.SaslSsl)
             {
                 producerConfig.SaslUsername = config.UserName;
                 producerConfig.SaslPassword = config.Password;
                 producerConfig.SaslMechanism = (SaslMechanism)config.SaslMechanism;
             }
+
             producerBuilder = new(producerConfig);
-            producerBuilder.SetErrorHandler((a, b) =>
-            {
-                Console.WriteLine("There was an error sending a message: " + b.Reason);
-            });
 
             ConsumerConfig consumerConfig = new()
             {
@@ -52,40 +55,32 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
                 EnableAutoOffsetStore = config.EnableAutoOffsetStore ?? true,
                 EnableAutoCommit = config.EnableAutoCommit ?? false,
                 ReceiveMessageMaxBytes = config.ReceiveMessageMaxBytes ?? int.MaxValue,
-                SecurityProtocol = (SecurityProtocol?)config.SecurityProtocol ?? SecurityProtocol.Plaintext,
-                //Debug = "all",
+                SecurityProtocol = (SecurityProtocol?)config.SecurityProtocol ?? SecurityProtocol.Plaintext
             };
+
             if (consumerConfig.SecurityProtocol == SecurityProtocol.SaslSsl)
             {
                 consumerConfig.SaslUsername = config.UserName;
                 consumerConfig.SaslPassword = config.Password;
                 consumerConfig.SaslMechanism = (SaslMechanism)config.SaslMechanism;
             }
+
             consumerBuilder = new(consumerConfig);
-            consumerBuilder.SetErrorHandler((a, b) =>
-            {
-                Console.WriteLine("SetErrorHandler: " + b.Reason);
-            });
-            consumerBuilder.SetOffsetsCommittedHandler((a, b) =>
-            {
-                Console.WriteLine("SetOffsetsCommittedHandler: " + b.Error);
-            });
-            consumerBuilder.SetPartitionsRevokedHandler((a, b) =>
-            {
-                Console.WriteLine("SetPartitionsRevokedHandler");
-            });
 
             this.services = services;
+
+            services.AddSingleton(config);
         }
 
         public IMessagingBuilder AddProducer(string topic, MessagingType type = MessagingType.Queue)
         {
-            // TODO dare errore se si chiama più volte o se si mette Queue
-
             IProducer<string, string> producer = producerBuilder.Build();
-            services.AddScoped<IMessageProducer>(x => new KafkaProducer(producer, topic));
+
+            services.AddProducer<IMessageProducer>(topic, (a) => new KafkaProducer(producer, topic));
             return this;
         }
+
+       
 
         public IMessagingBuilder AddConsumer<TConsumer>(string topic, string subscriber = "", MessagingType type = MessagingType.Queue, bool acceptIfInError = true) where TConsumer : class, IMessageConsumer
         {
@@ -95,7 +90,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
 
             IConsumer<string, string> consumer = consumerBuilder.Build();
             consumer.Subscribe(topic);
-            services.AddHostedService((a) => new KafkaBackgroundConsumer(consumer, a.GetRequiredService<TConsumer>(), acceptIfInError));
+            services.AddHostedService((a) => new KafkaBackgroundConsumer(consumer, a.TryGetRequiredService<TConsumer>(), acceptIfInError));
 
             return this;
         }
