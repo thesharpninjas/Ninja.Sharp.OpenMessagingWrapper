@@ -5,13 +5,13 @@ VisualStudioVersion = 17.10.35201.131
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ninja.Sharp.OpenMessagingMiddleware", "Ninja.Sharp.OpenMessagingMiddleware\Ninja.Sharp.OpenMessagingMiddleware.csproj", "{9F44959E-C0D6-4BC0-BC7E-E483A5AFA18E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ninja.Sharp.OpenMessagingMiddleware.Tests", "Ninja.Sharp.OpenMessagingMiddleware.Tests\Ninja.Sharp.OpenMessagingMiddleware.Tests.csproj", "{8F029041-8553-46F1-8F43-DEB16065E44B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ninja.Sharp.OpenMessagingMiddleware.Tests", "tests\Ninja.Sharp.OpenMessagingMiddleware.Tests\Ninja.Sharp.OpenMessagingMiddleware.Tests.csproj", "{8F029041-8553-46F1-8F43-DEB16065E44B}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ninja.Sharp.OpenMessagingMiddleware.App", "Ninja.Sharp.OpenMessagingMiddleware.App\Ninja.Sharp.OpenMessagingMiddleware.App.csproj", "{22963DE6-ADBC-413C-BFB2-6BD6BA9D3758}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ninja.Sharp.OpenMessagingMiddleware.App", "samples\Ninja.Sharp.OpenMessagingMiddleware.App\Ninja.Sharp.OpenMessagingMiddleware.App.csproj", "{22963DE6-ADBC-413C-BFB2-6BD6BA9D3758}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Sample", "Sample", "{02714B11-0C17-4F2A-9FBD-5E4053229C20}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ninja.Sharp.OpenMessagingMiddleware.Api", "Ninja.Sharp.OpenMessagingMiddleware.Api\Ninja.Sharp.OpenMessagingMiddleware.Api.csproj", "{2FEEE2B0-3919-4EAF-B376-AE7C4ED0E7E6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ninja.Sharp.OpenMessagingMiddleware.Api", "samples\Ninja.Sharp.OpenMessagingMiddleware.Api\Ninja.Sharp.OpenMessagingMiddleware.Api.csproj", "{2FEEE2B0-3919-4EAF-B376-AE7C4ED0E7E6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
