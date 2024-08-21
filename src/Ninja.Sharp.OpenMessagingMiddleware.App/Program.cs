@@ -21,7 +21,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.App
             await host.StartAsync();
 
             var myMessageProducerFactory = host.Services.GetRequiredService<IMessageProducerFactory>();
-            //var myDoctor = host.Services.GetRequiredService<HealthCheckService>();
+            var myDoctor = host.Services.GetRequiredService<HealthCheckService>();
 
             while (true)
             {
@@ -32,8 +32,8 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.App
                 });
                 Console.WriteLine("Sent message with ID " + id);
 
-                //HealthReport report = await myDoctor.CheckHealthAsync();
-                //Console.WriteLine("Status: " + report.Status);
+                HealthReport report = await myDoctor.CheckHealthAsync();
+                Console.WriteLine("Status: " + report.Status);
 
                 await Task.Delay(5000);
             }

@@ -9,9 +9,12 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
 {
     internal class KafkaBuilder : IMessagingBuilder
     {
+        private readonly KafkaConfig configuration;
         private readonly IServiceCollection services;
         private readonly ProducerBuilder<string, string> producerBuilder;
         private readonly ConsumerBuilder<string, string> consumerBuilder;
+        private readonly IHealthChecksBuilder healthBuilder;
+        private readonly ICollection<string> topics = [];
 
         public KafkaBuilder(IServiceCollection services, KafkaConfig config)
         {
@@ -19,6 +22,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
             {
                 throw new TransientBrokerException("Nessun bootstrap server configurato");
             }
+            configuration = config;
 
             // capire come valorizzare una cosa che è solo per INPS
             string caa = "kafka";
@@ -76,6 +80,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
             });
 
             this.services = services;
+            healthBuilder = services.AddHealthChecks();
         }
 
         public IMessagingBuilder AddProducer(string topic, MessagingType type = MessagingType.Queue)
@@ -84,6 +89,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
 
             IProducer<string, string> producer = producerBuilder.Build();
             services.AddScoped<IMessageProducer>(x => new KafkaProducer(producer, topic));
+            topics.Add(topic);
             return this;
         }
 
@@ -96,12 +102,15 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
             IConsumer<string, string> consumer = consumerBuilder.Build();
             consumer.Subscribe(topic);
             services.AddHostedService((a) => new KafkaBackgroundConsumer(consumer, a.GetRequiredService<TConsumer>(), acceptIfInError));
-
             return this;
         }
 
         public IServiceCollection Build()
         {
+            foreach (string topic in topics.Distinct())
+            {
+                healthBuilder.AddCheck($"Kafka connection for topic {topic}", new KafkaHealthCheck(configuration, topic), tags: ["Kafka"]);
+            }
             return services;
         }
     }
