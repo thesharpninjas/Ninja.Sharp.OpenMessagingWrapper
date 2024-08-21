@@ -36,7 +36,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
                 SecurityProtocol = (SecurityProtocol?)config.SecurityProtocol ?? SecurityProtocol.Plaintext,
                 //Debug = "all"
             };
-            if (producerConfig.SecurityProtocol == SecurityProtocol.SaslSsl)
+            if (producerConfig.SecurityProtocol == SecurityProtocol.SaslSsl || producerConfig.SecurityProtocol == SecurityProtocol.SaslPlaintext)
             {
                 producerConfig.SaslUsername = config.UserName;
                 producerConfig.SaslPassword = config.Password;
@@ -59,7 +59,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
                 SecurityProtocol = (SecurityProtocol?)config.SecurityProtocol ?? SecurityProtocol.Plaintext,
                 //Debug = "all",
             };
-            if (consumerConfig.SecurityProtocol == SecurityProtocol.SaslSsl)
+            if (consumerConfig.SecurityProtocol == SecurityProtocol.SaslSsl || consumerConfig.SecurityProtocol == SecurityProtocol.SaslPlaintext)
             {
                 consumerConfig.SaslUsername = config.UserName;
                 consumerConfig.SaslPassword = config.Password;
