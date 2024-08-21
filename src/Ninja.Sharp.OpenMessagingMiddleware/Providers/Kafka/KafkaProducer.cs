@@ -1,9 +1,11 @@
 ﻿using Confluent.Kafka;
 using Ninja.Sharp.OpenMessagingMiddleware.Interfaces;
+using Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka.Configuration;
+using System.Text;
 
 namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
 {
-    public class KafkaProducer(IProducer<string, string> producer, string topic) : IMessageProducer
+    public class KafkaProducer(IProducer<string, string> producer, string topic, KafkaConfig kafkaConfig) : IMessageProducer
     {
         private readonly IProducer<string, string> producer = producer;
         private readonly string topic = topic;
@@ -13,13 +15,19 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
         public async Task<string> SendAsync(string message)
         {
             CancellationToken cancellationToken = new CancellationTokenSource(5000).Token;
-            // TODO aggiungere il CAA (o equivalente) al message ID, come per Artemis
-            string msgId = Guid.NewGuid().ToString();
-            await producer.ProduceAsync(topic, new Message<string, string>
+            string identifier = kafkaConfig.Identifier;
+            string msgId = $"{identifier}.{Guid.NewGuid()}";
+            msgId = msgId.Trim('.');
+            Message<string, string> kafkaMessage = new()
             {
                 Key = msgId,
                 Value = message
-            }, cancellationToken);
+            };
+            if (!string.IsNullOrWhiteSpace(identifier))
+            {
+                kafkaMessage.Headers.Add("QMSMessageId", Encoding.UTF8.GetBytes(msgId));
+            }
+            await producer.ProduceAsync(topic, kafkaMessage, cancellationToken);
             return msgId;
         }
     }

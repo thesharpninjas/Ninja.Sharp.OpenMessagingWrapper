@@ -18,7 +18,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ
         private readonly ArtemisConfig config;
         private readonly IServiceCollection services;
         private readonly IActiveMqBuilder activeMqBuilder;
-        private readonly IHealthChecksBuilder healthBuilder;
+        private readonly IHealthChecksBuilder? healthBuilder;
         private readonly ICollection<string> topics = [];
 
         public ArtemisMqBuilder(IServiceCollection services, ArtemisConfig config)

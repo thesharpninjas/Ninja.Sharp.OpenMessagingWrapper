@@ -13,7 +13,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
         private readonly IServiceCollection services;
         private readonly ProducerBuilder<string, string> producerBuilder;
         private readonly ConsumerBuilder<string, string> consumerBuilder;
-        private readonly IHealthChecksBuilder healthBuilder;
+        private readonly IHealthChecksBuilder? healthBuilder;
         private readonly ICollection<string> producerTopics = [];
 
         public KafkaBuilder(IServiceCollection services, KafkaConfig config)
@@ -31,7 +31,6 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
 
             string id = config.Identifier + "_" + Guid.NewGuid().ToString();
             id = id.TrimStart('_');
-
             string bootstrapServers = string.Join(',', config.BootstrapServers.Select(s => $"{s.Host}:{s.Port}"));
             ProducerConfig producerConfig = new()
             {
@@ -81,7 +80,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
         public IMessagingBuilder AddProducer(string topic, MessagingType type = MessagingType.Queue)
         {
             IProducer<string, string> producer = producerBuilder.Build();
-            services.AddProducer<IMessageProducer>(topic, (a) => new KafkaProducer(producer, topic));
+            services.AddProducer<IMessageProducer>(topic, (a) => new KafkaProducer(producer, topic, configuration));
 
             producerTopics.Add(topic);
 

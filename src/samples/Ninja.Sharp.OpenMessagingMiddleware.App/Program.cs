@@ -24,12 +24,12 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.App
 
             while (true)
             {
-                //var idArtemis = await myMessageProducerFactory.Producer(topicArtemis).SendAsync(new Tester()
-                //{
-                //    Property1 = Guid.NewGuid().ToString(),
-                //    Property2 = Guid.NewGuid().ToString()
-                //});
-                //Console.WriteLine("Sent message with ID " + idArtemis);
+                var idArtemis = await myMessageProducerFactory.Producer(topicArtemis).SendAsync(new Tester()
+                {
+                    Property1 = Guid.NewGuid().ToString(),
+                    Property2 = Guid.NewGuid().ToString()
+                });
+                Console.WriteLine("Sent message with ID " + idArtemis);
                 try
                 {
                     var idKafka = await myMessageProducerFactory.Producer(topicKafka).SendAsync(new Tester()
@@ -63,11 +63,11 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.App
 
                  var configuration = builder.Build();
 
-                 //services
-                 //    .AddArtemisServices(configuration)
-                 //    .AddProducer(topicArtemis)
-                 //    .AddConsumer<LoggerMqConsumer>(topicArtemis)
-                 //    .Build();
+                 services
+                     .AddArtemisServices(configuration)
+                     .AddProducer(topicArtemis)
+                     .AddConsumer<LoggerMqConsumer>(topicArtemis)
+                     .Build();
 
                  services
                      .AddKafkaServices(configuration)
