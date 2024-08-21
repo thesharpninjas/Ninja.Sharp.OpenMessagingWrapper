@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Ninja.Sharp.OpenMessagingMiddleware.Factory;
 using Ninja.Sharp.OpenMessagingMiddleware.Interfaces;
 using Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ;
