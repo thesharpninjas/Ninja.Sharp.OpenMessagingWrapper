@@ -15,6 +15,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka.Configuration
         public string Password { get; set; } = string.Empty;
         public KafkaSaslMechanism SaslMechanism { get; set; }
         public string Identifier { get; set; } = string.Empty;
+        public bool HealthChecks { get; set; } = true;
 
         public class KafkaServer
         {

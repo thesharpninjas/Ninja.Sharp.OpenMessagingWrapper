@@ -2,6 +2,7 @@
 using ActiveMQ.Artemis.Client.AutoRecovering.RecoveryPolicy;
 using ActiveMQ.Artemis.Client.Extensions.DependencyInjection;
 using ActiveMQ.Artemis.Client.Extensions.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Ninja.Sharp.OpenMessagingMiddleware.Interfaces;
@@ -55,10 +56,12 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ
             activeMqBuilder = activeMqBuilder.AddAnonymousProducer<ArtemisMqMessageProducer>();
             this.services = services;
             this.config = config;
-
             services.AddSingleton(config);
 
-            healthBuilder = services.AddHealthChecks();
+            if (config.HealthChecks)
+            {
+                healthBuilder = services.AddHealthChecks();
+            }
         }
 
         public IMessagingBuilder AddConsumer<TConsumer>(string topic, string subscriber = "", MessagingType type = MessagingType.Queue, bool acceptIfInError = true) where TConsumer : class, IMessageConsumer
@@ -83,11 +86,14 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ
         {
             services.AddActiveMqHostedService();
 
-            string[] tags = ["Artemis"];
-            healthBuilder.AddCheck("ArtemisMq", new ArtemisMqConnectionHealthCheck(), tags: tags);
-            foreach (var topic in topics.Distinct())
+            if (config.HealthChecks)
             {
-                healthBuilder.AddCheck("Artemis connection for topic " + topic, new ArtemisMqTopicHealthCheck(config, topic), tags: tags);
+                string[] tags = ["Artemis"];
+                healthBuilder.AddCheck("ArtemisMq", new ArtemisMqConnectionHealthCheck(), tags: tags);
+                foreach (var topic in topics.Distinct())
+                {
+                    healthBuilder.AddCheck("Artemis connection for topic " + topic, new ArtemisMqTopicHealthCheck(config, topic), tags: tags);
+                }
             }
             return services;
         }

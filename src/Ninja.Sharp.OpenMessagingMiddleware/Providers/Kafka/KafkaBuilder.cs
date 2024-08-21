@@ -4,7 +4,6 @@ using Confluent.Kafka;
 using Ninja.Sharp.OpenMessagingMiddleware.Model.Enums;
 using Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka.Configuration;
 using Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka.HealthCheck;
-using Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ.HealthCheck;
 
 namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
 {
@@ -73,7 +72,10 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
             this.services = services;
 
             services.AddSingleton(config);
-            healthBuilder = services.AddHealthChecks();
+            if (config.HealthChecks)
+            {
+                healthBuilder = services.AddHealthChecks();
+            }
         }
 
         public IMessagingBuilder AddProducer(string topic, MessagingType type = MessagingType.Queue)
@@ -100,11 +102,14 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
 
         public IServiceCollection Build()
         {
-            string[] tags = ["Kafka"];
-            healthBuilder.AddCheck("Kafka", new KafkaConnectionHealthCheck(), tags: tags);
-            foreach (string topic in producerTopics.Distinct())
+            if (configuration.HealthChecks)
             {
-                healthBuilder.AddCheck($"Kafka connection for topic {topic}", new KafkaTopicHealthCheck(configuration, topic), tags: tags);
+                string[] tags = ["Kafka"];
+                healthBuilder.AddCheck("Kafka", new KafkaConnectionHealthCheck(), tags: tags);
+                foreach (string topic in producerTopics.Distinct())
+                {
+                    healthBuilder.AddCheck($"Kafka connection for topic {topic}", new KafkaTopicHealthCheck(configuration, topic), tags: tags);
+                }
             }
             return services;
         }

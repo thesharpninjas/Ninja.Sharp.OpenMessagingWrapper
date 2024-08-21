@@ -29,7 +29,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\Ninja.Sharp.OpenMessagingMiddleware\Ninja.Sharp.OpenMessagingMiddleware.csproj" />
+	  <ProjectReference Include="..\..\Ninja.Sharp.OpenMessagingMiddleware\Ninja.Sharp.OpenMessagingMiddleware.csproj" />
 	</ItemGroup>
 
 </Project>

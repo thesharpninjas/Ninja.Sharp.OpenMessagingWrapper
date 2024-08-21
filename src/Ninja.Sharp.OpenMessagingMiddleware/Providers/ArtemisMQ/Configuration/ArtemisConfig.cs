@@ -7,7 +7,7 @@
         public int RetryWaitTime { get; set; } = 500;
 
         public ICollection<ArtemisEndpoint> Endpoints { get; set; } = [];
-
+        public bool HealthChecks { get; set; } = true;
     }
 
     public class ArtemisEndpoint
