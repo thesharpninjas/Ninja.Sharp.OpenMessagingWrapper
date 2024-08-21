@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using Ninja.Sharp.OpenMessagingMiddleware.Interfaces;
+﻿using Ninja.Sharp.OpenMessagingMiddleware.Interfaces;
 using Ninja.Sharp.OpenMessagingMiddleware.Model;
 
 namespace Ninja.Sharp.OpenMessagingMiddleware.Api

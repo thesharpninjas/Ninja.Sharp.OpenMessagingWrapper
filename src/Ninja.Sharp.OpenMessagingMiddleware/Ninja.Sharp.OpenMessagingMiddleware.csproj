@@ -4,23 +4,53 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<Title>A .net driver for simplified access to common messaging system.</Title>
+		<Version>0.0.1-alpha</Version>
+		<Company>The Sharp Ninjas</Company>
+		<Authors>The Sharp Ninjas</Authors>
+		<Product>OpenMessagingMiddleware</Product>
+		<Copyright>Copyright © 2024</Copyright>
+		<Description>A .net driver for simplified access to common messaging system. Now supporting ArtemisMQ and Kafka</Description>
+		<PackageTags>ArtemisMQ, Kafka</PackageTags>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+		<PackageProjectUrl>https://github.com/thesharpninjas/Ninja.Sharp.OpenMessagingMiddleware</PackageProjectUrl>
+		<PackageIcon>icon.png</PackageIcon>
+		<RepositoryUrl>https://github.com/thesharpninjas/Ninja.Sharp.OpenMessagingMiddleware</RepositoryUrl>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="ArtemisNetClient" Version="2.16.0" />
 		<PackageReference Include="Confluent.Kafka" Version="2.5.2" />
-		<PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.2" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="8.0.0" />
-		<PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.0" />
 		<PackageReference Include="ArtemisNetClient" Version="2.16.0" />
 		<PackageReference Include="ArtemisNetClient.Extensions.DependencyInjection" Version="2.16.0" />
 		<PackageReference Include="ArtemisNetClient.Extensions.Hosting" Version="2.16.0" />
 		<PackageReference Include="Apache.NMS.ActiveMQ" Version="2.1.0" />
 		<PackageReference Include="microsoft.extensions.diagnostics.healthchecks" Version="8.0.6" />
 		<PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions" Version="8.0.6" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+		<InternalsVisibleTo Include="$(TestProjectName)" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\LICENSE.txt">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+		<None Include="..\README.md">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
+		<None Include="..\icon.png">
+			<Pack>True</Pack>
+			<PackagePath>\</PackagePath>
+		</None>
 	</ItemGroup>
 
 </Project>
