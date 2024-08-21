@@ -44,7 +44,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
             {
                 producerConfig.SaslUsername = config.UserName;
                 producerConfig.SaslPassword = config.Password;
-                producerConfig.SaslMechanism = (SaslMechanism)config.SaslMechanism;
+                producerConfig.SaslMechanism = (SaslMechanism?)config.SaslMechanism ?? SaslMechanism.Plain;
             }
             producerBuilder = new(producerConfig);
             producerBuilder.SetErrorHandler(KafkaConnectionHealthCheck.KafkaProducerErrorHandler);
@@ -63,7 +63,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
             {
                 consumerConfig.SaslUsername = config.UserName;
                 consumerConfig.SaslPassword = config.Password;
-                consumerConfig.SaslMechanism = (SaslMechanism)config.SaslMechanism;
+                consumerConfig.SaslMechanism = (SaslMechanism?)config.SaslMechanism ?? SaslMechanism.Plain;
             }
             consumerBuilder = new(consumerConfig);
             consumerBuilder.SetErrorHandler(KafkaConnectionHealthCheck.KafkaConsumerErrorHandler);
