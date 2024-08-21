@@ -45,8 +45,8 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ
                         stackTrace = ex.StackTrace,
                         inner = ex.InnerException?.Message ?? string.Empty,
                         uri = connecturi,
-                        user = endpoint.Username,
-                        pass = endpoint.Password
+                        //user = endpoint.Username,
+                        //pass = endpoint.Password
 
                     };
                     return new HealthCheckResult(HealthStatus.Unhealthy, $"Si sono verificati errori durante la connessione a {endpoint.Host}. {message.Serialize()}");

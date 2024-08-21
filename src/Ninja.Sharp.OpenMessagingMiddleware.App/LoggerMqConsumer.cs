@@ -8,7 +8,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.App
     {
         public Task ConsumeAsync(MqMessage message)
         {
-            logger.LogWarning("Message consumed: {0}", message.Body);
+            logger.LogInformation("Message consumed. Id: {MessageId}, Body: {MessageBody}.", message.Id, message.Body);
             return Task.CompletedTask;
         }
     }

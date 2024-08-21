@@ -9,9 +9,12 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
 {
     internal class KafkaBuilder : IMessagingBuilder
     {
+        private readonly KafkaConfig configuration;
         private readonly IServiceCollection services;
         private readonly ProducerBuilder<string, string> producerBuilder;
         private readonly ConsumerBuilder<string, string> consumerBuilder;
+        private readonly IHealthChecksBuilder healthBuilder;
+        private readonly ICollection<string> topics = [];
 
         public KafkaBuilder(IServiceCollection services, KafkaConfig config)
         {
@@ -19,6 +22,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
             {
                 throw new ArgumentException("There are no bootstrap servers configured");
             }
+            configuration = config;
 
             if (services.Any(x => x.ServiceType == typeof(KafkaConfig)))
             {
@@ -70,6 +74,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
             this.services = services;
 
             services.AddSingleton(config);
+            healthBuilder = services.AddHealthChecks();
         }
 
         public IMessagingBuilder AddProducer(string topic, MessagingType type = MessagingType.Queue)
@@ -97,6 +102,10 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
 
         public IServiceCollection Build()
         {
+            foreach (string topic in topics.Distinct())
+            {
+                healthBuilder.AddCheck($"Kafka connection for topic {topic}", new KafkaHealthCheck(configuration, topic), tags: ["Kafka"]);
+            }
             return services;
         }
     }
