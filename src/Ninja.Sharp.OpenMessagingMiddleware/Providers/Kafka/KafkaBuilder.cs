@@ -25,7 +25,7 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.Kafka
 
             if (services.Any(x => x.ServiceType == typeof(KafkaConfig)))
             {
-                throw new ArgumentException("You cannot add more than one Artemis service.");
+                throw new ArgumentException("You cannot add more than one Kafka service.");
             }
 
             string id = config.Identifier + "_" + Guid.NewGuid().ToString();
