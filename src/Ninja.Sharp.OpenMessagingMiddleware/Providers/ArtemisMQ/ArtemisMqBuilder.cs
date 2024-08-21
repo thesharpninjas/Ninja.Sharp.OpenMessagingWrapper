@@ -25,6 +25,11 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ
                 throw new ArgumentException("Endpoints not provided in Artemis configuration.");
             }
 
+            if (services.Any(x => x.ServiceType == typeof(ArtemisConfig)))
+            {
+                throw new ArgumentException("You cannot add more than one Artemis service.");
+            }
+
             var endpoints = new List<Endpoint>();
             foreach (var myEndpoint in config.Endpoints)
             {
@@ -48,6 +53,8 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ
             this.services = services;
             this.config = config;
 
+            services.AddSingleton(config);
+
             healthBuilder = services.AddHealthChecks();
         }
 
@@ -58,14 +65,14 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ
             topics.Add(topic);
             activeMqBuilder.AddConsumer(topic,
                    type == MessagingType.Queue ? RoutingType.Anycast : RoutingType.Multicast,
-                   async (message, consumer, serviceProvider, _) => await ConsumerHandlerAsync(message, consumer, serviceProvider, topic, typeof(TConsumer), acceptIfInError));
+                   async (message, consumer, serviceProvider, _) => await ConsumerHandlerAsync(message, consumer, serviceProvider, typeof(TConsumer), acceptIfInError));
             return this;
         }
 
         public IMessagingBuilder AddProducer(string topic, MessagingType type = MessagingType.Queue)
         {
+            services.AddProducer<IMessageProducer>(topic, (a) => new ArtemisMqProducer(a.GetRequiredService<ArtemisMqMessageProducer>(), topic));
             topics.Add(topic);
-            services.AddScoped<IMessageProducer>(x => new ArtemisMqProducer(x.GetRequiredService<ArtemisMqMessageProducer>(), topic));
             return this;
         }
 
@@ -80,14 +87,14 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.Providers.ArtemisMQ
         }
 
         #region static
-        internal static async Task ConsumerHandlerAsync(Message message, IConsumer consumer, IServiceProvider serviceProvider, string queue, Type type, bool acceptIfInError)
+        internal static async Task ConsumerHandlerAsync(Message message, IConsumer consumer, IServiceProvider serviceProvider, Type type, bool acceptIfInError)
         {
             bool inError = false;
             try
             {
                 string messageString = message.GetBody<string>();
 
-                var selectedConsumer = serviceProvider.GetRequiredService(type) as IMessageConsumer;
+                var selectedConsumer = serviceProvider.TryGetRequiredService(type) as IMessageConsumer;
 
                 await selectedConsumer!.ConsumeAsync(new MqMessage()
                 {
