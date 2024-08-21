@@ -9,8 +9,8 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.App
 {
     public static class Program
     {
-        const string topicArtemis = "MS00536.AS.AckINPSPRE";
-        const string topicKafka = "myFirstTopic";
+        const string artemisTopic = "artemisTopic";
+        const string kafkaTopic = "kafkaTopic";
 
         static async Task Main(string[] args)
         {
@@ -24,25 +24,19 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.App
 
             while (true)
             {
-                var idArtemis = await myMessageProducerFactory.Producer(topicArtemis).SendAsync(new Tester()
+                var idArtemis = await myMessageProducerFactory.Producer(artemisTopic).SendAsync(new Tester()
                 {
                     Property1 = Guid.NewGuid().ToString(),
                     Property2 = Guid.NewGuid().ToString()
                 });
                 Console.WriteLine("Sent message with ID " + idArtemis);
-                try
+
+                var idKafka = await myMessageProducerFactory.Producer(kafkaTopic).SendAsync(new Tester()
                 {
-                    var idKafka = await myMessageProducerFactory.Producer(topicKafka).SendAsync(new Tester()
-                    {
-                        Property1 = Guid.NewGuid().ToString(),
-                        Property2 = Guid.NewGuid().ToString()
-                    });
-                    Console.WriteLine("Sent message with ID " + idKafka);
-                }
-                catch (Exception ex)
-                {
-                    // ignora
-                }
+                    Property1 = Guid.NewGuid().ToString(),
+                    Property2 = Guid.NewGuid().ToString()
+                });
+                Console.WriteLine("Sent message with ID " + idKafka);
 
                 HealthReport report = await myDoctor.CheckHealthAsync();
                 Console.WriteLine("Status: " + report.Status);
@@ -51,7 +45,6 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.App
             }
         }
 
-        //https://refactoring.guru/design-patterns/builder/csharp/example#example-0
         public static IHostBuilder CreateHostBuilder(string[] args) =>
          Host.CreateDefaultBuilder(args)
              .ConfigureServices((hostContext, services) =>
@@ -65,14 +58,14 @@ namespace Ninja.Sharp.OpenMessagingMiddleware.App
 
                  services
                      .AddArtemisServices(configuration)
-                     .AddProducer(topicArtemis)
-                     .AddConsumer<LoggerMqConsumer>(topicArtemis)
+                     .AddProducer(artemisTopic)
+                     .AddConsumer<LoggerMqConsumer>(artemisTopic)
                      .Build();
 
                  services
                      .AddKafkaServices(configuration)
-                     .AddProducer(topicKafka)
-                     .AddConsumer<LoggerMqConsumer>(topicKafka)
+                     .AddProducer(kafkaTopic)
+                     .AddConsumer<LoggerMqConsumer>(kafkaTopic)
                      .Build();
 
                  services.BuildServiceProvider();

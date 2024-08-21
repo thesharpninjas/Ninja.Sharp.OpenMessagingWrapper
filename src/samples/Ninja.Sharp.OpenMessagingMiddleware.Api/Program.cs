@@ -9,18 +9,20 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Configuration.AddUserSecrets(typeof(Program).Assembly);
 
-string topic = "MS00536.AS.AckINPSPRE";
+string artemisTopic = "artemisTopic";
+string kafkaTopic = "kafkaTopic";
+
 builder.Services
     .AddArtemisServices(builder.Configuration)
-    .AddProducer(topic)
-    .AddConsumer<LoggerMqConsumer>(topic)
+    .AddProducer(artemisTopic)
+    .AddConsumer<LoggerMqConsumer>(artemisTopic)
     .Build();
 
-topic = "hello-world";
+
 builder.Services
     .AddKafkaServices(builder.Configuration)
-    .AddProducer(topic)
-    .AddConsumer<LoggerMqConsumer>(topic)
+    .AddProducer(kafkaTopic)
+    .AddConsumer<LoggerMqConsumer>(kafkaTopic)
     .Build();
 
 var app = builder.Build();
