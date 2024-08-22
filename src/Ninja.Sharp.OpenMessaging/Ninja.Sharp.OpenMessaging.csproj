@@ -4,7 +4,7 @@
 		<TargetFramework>net8.0</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
-		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<!--<GeneratePackageOnBuild>True</GeneratePackageOnBuild>-->
 		<Title>A .net driver for simplified access to common messaging system.</Title>
 		<Version>0.0.1-alpha</Version>
 		<Company>The Sharp Ninjas</Company>
