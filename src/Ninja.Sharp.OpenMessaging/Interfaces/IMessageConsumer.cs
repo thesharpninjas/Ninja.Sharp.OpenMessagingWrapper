@@ -1,4 +1,5 @@
 ﻿using Ninja.Sharp.OpenMessaging.Model;
+using Ninja.Sharp.OpenMessaging.Model.Enums;
 
 namespace Ninja.Sharp.OpenMessaging.Interfaces
 {
@@ -15,26 +16,5 @@ namespace Ninja.Sharp.OpenMessaging.Interfaces
         Task<MessageAction> ConsumeAsync(IncomingMessage message);
     }
 
-    /// <summary>
-    /// Defines the action to be taken after processing the message
-    /// </summary>
-    public enum MessageAction
-    {
-        /// <summary>
-        /// Complete the message processing. This message will be removed from the queue
-        /// </summary>
-        Complete,
-        /// <summary>
-        /// Reject the message. This message will be removed from the queue
-        /// </summary>
-        Reject,
-        /// <summary>
-        /// Requeue the message. This message will be requeued
-        /// </summary>
-        Requeue,
-        /// <summary>
-        /// Error processing the message. This message will be requeued
-        /// </summary>
-        Error
-    }
+    
 }

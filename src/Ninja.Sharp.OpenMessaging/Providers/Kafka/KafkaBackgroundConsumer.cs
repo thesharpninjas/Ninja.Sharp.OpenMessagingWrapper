@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Hosting;
 using Ninja.Sharp.OpenMessaging.Interfaces;
 using Ninja.Sharp.OpenMessaging.Model;
+using Ninja.Sharp.OpenMessaging.Model.Enums;
 
 namespace Ninja.Sharp.OpenMessaging.Providers.Kafka
 {
