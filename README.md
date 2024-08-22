@@ -1,8 +1,8 @@
 # OpenMessagingWrapperWrapper - a .NET wrapper for message brokers
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![issues - Ninja.Sharp.OpenMessagingWrapperWrapper](https://img.shields.io/github/issues/thesharpninjas/Ninja.Sharp.OpenMessagingWrapperWrapper)](https://github.com/thesharpninjas/Ninja.Sharp.OpenMessagingWrapperWrapper/issues)
-[![stars - Ninja.Sharp.OpenMessagingWrapperWrapper](https://img.shields.io/github/stars/thesharpninjas/Ninja.Sharp.OpenMessagingWrapperWrapper?style=social)](https://github.com/thesharpninjas/Ninja.Sharp.OpenMessagingWrapperWrapper)
+[![issues - Ninja.Sharp.OpenMessagingWrapper](https://img.shields.io/github/issues/thesharpninjas/Ninja.Sharp.OpenMessagingWrapper)](https://github.com/thesharpninjas/Ninja.Sharp.OpenMessagingWrapper/issues)
+[![stars - Ninja.Sharp.OpenMessagingWrapper](https://img.shields.io/github/stars/thesharpninjas/Ninja.Sharp.OpenMessagingWrapper?style=social)](https://github.com/thesharpninjas/Ninja.Sharp.OpenMessagingWrapperWrapper)
 
 Release Notes
 -------------
