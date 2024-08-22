@@ -1,9 +1,6 @@
-using ActiveMQ.Artemis.Client;
 using Moq;
 using Ninja.Sharp.OpenMessaging.Factory;
 using Ninja.Sharp.OpenMessaging.Interfaces;
-using Ninja.Sharp.OpenMessaging.Providers.ArtemisMQ;
-using Ninja.Sharp.OpenMessaging.Providers.ArtemisMQ.Configuration;
 
 namespace Ninja.Sharp.OpenMessaging.Tests
 {
@@ -17,10 +14,10 @@ namespace Ninja.Sharp.OpenMessaging.Tests
                 .Setup(x => x.Topic)
                 .Returns("topic");
 
-            var producerFactory = new MessageProducerFactory(new List<IMessageProducer>()
-            {
+            var producerFactory = new MessageProducerFactory(
+            [
                 mockAnonymousProducer.Object
-            });
+            ]);
 
             var producer = producerFactory.Producer("topic");
 
@@ -30,10 +27,7 @@ namespace Ninja.Sharp.OpenMessaging.Tests
         [Fact]
         public void MessageProducerFactory_whenNoProducers_thenThrow()
         {
-            var producerFactory = new MessageProducerFactory(new List<IMessageProducer>()
-            {
-                
-            });
+            var producerFactory = new MessageProducerFactory([]);
 
             Assert.Throws<ArgumentException>(() => producerFactory.Producer("topic"));
         }
@@ -46,12 +40,12 @@ namespace Ninja.Sharp.OpenMessaging.Tests
                 .Setup(x => x.Topic)
                 .Returns(Guid.NewGuid().ToString());
 
-            var producerFactory = new MessageProducerFactory(new List<IMessageProducer>()
-            {
+            var producerFactory = new MessageProducerFactory(
+            [
                 mockAnonymousProducer.Object,
                 mockAnonymousProducer.Object,
                 mockAnonymousProducer.Object
-            });
+            ]);
 
             Assert.Throws<ArgumentException>(() => producerFactory.Producer("topic"));
         }

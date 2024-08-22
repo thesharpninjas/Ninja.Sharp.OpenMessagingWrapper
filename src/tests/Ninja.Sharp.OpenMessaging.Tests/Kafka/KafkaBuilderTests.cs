@@ -1,6 +1,5 @@
 ﻿using AutoFixture.Xunit2;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Ninja.Sharp.OpenMessaging.Interfaces;
 using Ninja.Sharp.OpenMessaging.Model;
 using Ninja.Sharp.OpenMessaging.Model.Enums;
@@ -10,7 +9,7 @@ using Ninja.Sharp.OpenMessaging.Providers.Kafka.Enums;
 
 namespace Ninja.Sharp.OpenMessaging.Tests.Kafka
 {
-    public class KafkaBuilderTests : IClassFixture<AppFixture>
+    public class KafkaBuilderTests
     {
         [Theory]
         [InlineAutoData(null)]
