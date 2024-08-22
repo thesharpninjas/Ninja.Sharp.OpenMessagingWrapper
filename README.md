@@ -1,6 +1,9 @@
+# OpenMessaging - a .NET wrapper for message brokers
 
-OpenMessaging - a .Net wrapper for message brokers
-========================================
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![issues - Ninja.Sharp.OpenMessagingMiddleware](https://img.shields.io/github/issues/thesharpninjas/Ninja.Sharp.OpenMessagingMiddleware)](https://github.com/thesharpninjas/Ninja.Sharp.OpenMessagingMiddleware/issues)
+[![stars - Ninja.Sharp.OpenMessagingMiddleware](https://img.shields.io/github/stars/thesharpninjas/Ninja.Sharp.OpenMessagingMiddleware?style=social)](https://github.com/thesharpninjas/Ninja.Sharp.OpenMessagingMiddleware)
+
 Release Notes
 -------------
 First release has been created!
@@ -10,19 +13,19 @@ Packages
 
 | Package | NuGet Stable | 
 | ------- | ------------ | 
-| [OpenMessaging](https://github.com/thesharpninjas/Ninja.Sharp.OpenMessagingMiddleware/) | [![OpenMessaging](https://img.shields.io/badge/nuget-v0.0.1-blue)](https://www.nuget.org/packages/Ninja.Sharp.OpenMessagingMiddleware/)
+| [OpenMessaging](https://github.com/thesharpninjas/Ninja.Sharp.OpenMessaging/) | [![OpenMessaging](https://img.shields.io/badge/nuget-v0.0.1-blue)](https://www.nuget.org/packages/Ninja.Sharp.OpenMessaging/)
 
 Features
 --------
-OpenMessaging is a [NuGet library](https://www.nuget.org/packages/Ninja.Sharp.OpenMessagingMiddleware) that aims in simplifying usage for the most common messaging framework.
+OpenMessaging is a [NuGet .NET library](https://www.nuget.org/packages/Ninja.Sharp.OpenMessaging) that aims in simplifying usage for the most common messaging framework.
 The library encapsulates some behavior and common options for most frameworks, providing a simple management to rule them all via configuration.
 
 Right now, it allows integration with these framework:
  - [**Apache ArtemisMQ**](https://activemq.apache.org/components/artemis/): a next-generation message broker, based on the HornetQ code-base. The implementation is based on [ArtemisNetClient](https://havret.github.io/dotnet-activemq-artemis-client/docs/getting-started/) 
- - [**Apache Kafka**]: Apache Kafka is an open-source distributed event streaming platform used by thousands of companies for high-performance data pipelines, streaming analytics, data integration, and mission-critical applications. The implementation is based on [Confluent .NET client](https://docs.confluent.io/kafka-clients/dotnet/current/overview.html)
+ - [**Apache Kafka**](https://kafka.apache.org/): Apache Kafka is an open-source distributed event streaming platform used by thousands of companies for high-performance data pipelines, streaming analytics, data integration, and mission-critical applications. The implementation is based on [Confluent .NET client](https://docs.confluent.io/kafka-clients/dotnet/current/overview.html)
 
-Next steps:
- we'll try to provide abstraction for most popular message brokers, such as
+### Next steps:
+We'll try to provide abstraction for most popular message brokers, such as
   - [**Azure ServiceBus**]
   - [**Azure StorageQueue**]
   - [**Azure EventGrid**]
@@ -34,12 +37,11 @@ Next steps:
 
 ## Limitations
 OpenMessaging allows to use in the same application several message brokers at a time. However
- - you cannot use multiple instances of the same message broker; you can use ArtemisMQ AND Kafka, but you cannot connect multiple instances of ArtemisMQ.
+ - you cannot use multiple instances of the same message broker; you can use ArtemisMQ **and** Kafka, but you cannot connect use multiple instances of ArtemisMQ.
  - you cannot use the same topic name twice, even if the topic resides in different message brokers.
 
 ## Configuration
 OpenMessaging can be configured manually or via appsettings.json. Configuration differs for each message broker, while the subsequent usage will be hidden by OpenMessaging framework. 
-
 If you're using appsetting.json, then you just need to add configurations under the 'Messaging' tag:
 
 ``` json
@@ -75,7 +77,9 @@ If you're using appsetting.json, then you just need to add configurations under 
   }
 }
 ```
-otherwise, if you're using manual configuration, you just need to add configurations when you add the requested services 
+
+otherwise, if you're using manual configuration, you just need to add configurations when you add the requested services
+
 ``` csharp
 builder.Services.AddArtemisServices(new ArtemisConfig()
     {
@@ -108,7 +112,7 @@ builder.Services
 
 ## Sending messages
 Once configured, sending a message is quite easy. You do not need to know how the broker work, or which broker you need - you just need the destination topic/queue and the message you have to send.
-Once configured, you can inject the IMessageProducerFactory instance that you'll use to send a single message
+Once configured, you can inject the `IMessageProducerFactory` instance that you'll use to send a single message
 
 ``` csharp
     [ApiController]
@@ -126,11 +130,12 @@ Once configured, you can inject the IMessageProducerFactory instance that you'll
         }
     }
 ```
+
 ## Receiving messages
 Receive a message could be quite a pain, depending on the specific broker implementation. 
-OpenMessaging simplifies message management, you just need to provide, while adding a Consumer, a class, implementing IMessageConsumer. 
+OpenMessaging simplifies message management, you just need to provide, while adding a Consumer, a class, implementing `IMessageConsumer`. 
 Whenever a message is available for the specified topic, the method ConsumeAsync will be triggered, providing you basic info about the message.
-You just need to specify if the message has been correctly processed (returning MessageAction.Complete), if it needs to be reprocessed (MessageAction.Requeue), or it should be discarded (MessageAction.Reject).
+You just need to specify if the message has been correctly processed (returning `MessageAction.Complete`), if it needs to be reprocessed (`MessageAction.Requeue`), or it should be discarded (`MessageAction.Reject`).
 
 ``` csharp
     public class LoggerMqConsumer(ILogger<LoggerMqConsumer> logger) : IMessageConsumer
@@ -166,17 +171,23 @@ OpenMessaging exploits the amazing features provided by Microsoft [HealthChecks]
     }
 ```
 
+## Licensee
+Repository source code is available under MIT License, see license in the source.
 
+OpenMessaging uses the **confluent-kafka-dotnet** library, which is distributed under Apache 2.0 license:
+* [Official repository](https://github.com/confluentinc/confluent-kafka-dotnet)
+* [License](https://github.com/confluentinc/confluent-kafka-dotnet/blob/master/LICENSE)
+  
+OpenMessaging uses the **Apache.NMS.ActiveMQ** library, which is distributed under Apache 2.0 license:
+* [Official repository](https://github.com/apache/activemq-nms-openwire)
+* [License](https://github.com/apache/activemq-nms-openwire/blob/main/LICENSE.txt)
 
-
- ## Contributing
+## Contributing
 Thank you for considering to help out with the source code!
 If you'd like to contribute, please fork, fix, commit and send a pull request for the maintainers to review and merge into the main code base.
- 
+
 **Getting started with Git and GitHub**
- 
-* [Setting up Git for Windows and connecting to GitHub](http://help.github.com/win-set-up-git/)
-* [Forking a GitHub repository](http://help.github.com/fork-a-repo/)
-* [The simple guide to GIT guide](http://rogerdudler.github.com/git-guide/)
-* [Open an issue](https://github.com/thesharpninjas/Ninja.Sharp.OpenSODA/issues) if you encounter a bug or have a suggestion for improvements/features
-****
+
+ * [Setting up Git](https://docs.github.com/en/get-started/getting-started-with-git/set-up-git)
+ * [Fork the repository](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo)
+ * [Open an issue](https://github.com/thesharpninjas/Ninja.Sharp.OpenMessagingMiddleware/issues) if you encounter a bug or have a suggestion for improvements/features
