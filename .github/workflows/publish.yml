@@ -76,7 +76,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
     - name: Run tests
-      run: dotnet test --configuration Release
+      run: dotnet test src/tests/Ninja.Sharp.OpenMessaging.Tests.csproj --configuration Release
 
   deploy:
     # Publish only when creating a GitHub Release
