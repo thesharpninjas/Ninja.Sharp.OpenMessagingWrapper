@@ -10,11 +10,11 @@ Packages
 
 | Package | NuGet Stable | 
 | ------- | ------------ | 
-| [OpenMessaging](https://github.com/thesharpninjas/Ninja.Sharp.OpenMessaging/) | [![OpenMessaging](https://img.shields.io/badge/nuget-v0.0.1-blue)](https://www.nuget.org/packages/Ninja.Sharp.OpenMessaging/)
+| [OpenMessaging](https://github.com/thesharpninjas/Ninja.Sharp.OpenMessagingMiddleware/) | [![OpenMessaging](https://img.shields.io/badge/nuget-v0.0.1-blue)](https://www.nuget.org/packages/Ninja.Sharp.OpenMessagingMiddleware/)
 
 Features
 --------
-OpenMessaging is a [NuGet library](https://www.nuget.org/packages/Ninja.Sharp.OpenMessaging) that aims in simplifying usage for the most common messaging framework.
+OpenMessaging is a [NuGet library](https://www.nuget.org/packages/Ninja.Sharp.OpenMessagingMiddleware) that aims in simplifying usage for the most common messaging framework.
 The library encapsulates some behavior and common options for most frameworks, providing a simple management to rule them all via configuration.
 
 Right now, it allows integration with these framework:
