@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Ninja.Sharp.OpenMessaging.Interfaces;
 using Ninja.Sharp.OpenMessaging.Model;
+using Ninja.Sharp.OpenMessaging.Model.Enums;
 
 namespace Ninja.Sharp.OpenMessaging.App
 {
