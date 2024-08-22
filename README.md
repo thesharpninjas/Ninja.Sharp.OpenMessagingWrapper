@@ -1,8 +1,8 @@
-# OpenMessaging - a .NET wrapper for message brokers
+# OpenMessagingWrapper - a .NET wrapper for message brokers
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![issues - Ninja.Sharp.OpenMessagingMiddleware](https://img.shields.io/github/issues/thesharpninjas/Ninja.Sharp.OpenMessagingMiddleware)](https://github.com/thesharpninjas/Ninja.Sharp.OpenMessagingMiddleware/issues)
-[![stars - Ninja.Sharp.OpenMessagingMiddleware](https://img.shields.io/github/stars/thesharpninjas/Ninja.Sharp.OpenMessagingMiddleware?style=social)](https://github.com/thesharpninjas/Ninja.Sharp.OpenMessagingMiddleware)
+[![issues - Ninja.Sharp.OpenMessagingWrapper](https://img.shields.io/github/issues/thesharpninjas/Ninja.Sharp.OpenMessagingWrapper)](https://github.com/thesharpninjas/Ninja.Sharp.OpenMessagingWrapper/issues)
+[![stars - Ninja.Sharp.OpenMessagingWrapper](https://img.shields.io/github/stars/thesharpninjas/Ninja.Sharp.OpenMessagingWrapper?style=social)](https://github.com/thesharpninjas/Ninja.Sharp.OpenMessagingWrapper)
 
 Release Notes
 -------------
@@ -13,11 +13,11 @@ Packages
 
 | Package | NuGet Stable | 
 | ------- | ------------ | 
-| [OpenMessaging](https://github.com/thesharpninjas/Ninja.Sharp.OpenMessaging/) | [![OpenMessaging](https://img.shields.io/badge/nuget-v0.0.1-blue)](https://www.nuget.org/packages/Ninja.Sharp.OpenMessaging/)
+| [OpenMessagingWrapper](https://github.com/thesharpninjas/Ninja.Sharp.OpenMessagingWrapper/) | [![OpenMessagingWrapper](https://img.shields.io/badge/nuget-v0.0.1-blue)](https://www.nuget.org/packages/Ninja.Sharp.OpenMessagingWrapper)
 
 Features
 --------
-OpenMessaging is a [NuGet .NET library](https://www.nuget.org/packages/Ninja.Sharp.OpenMessaging) that aims in simplifying usage for the most common messaging framework.
+OpenMessagingWrapper is a [NuGet .NET library](https://www.nuget.org/packages/Ninja.Sharp.OpenMessagingWrapper) that aims in simplifying usage for the most common messaging framework.
 The library encapsulates some behavior and common options for most frameworks, providing a simple management to rule them all via configuration.
 
 Right now, it allows integration with these framework:
@@ -36,12 +36,12 @@ We'll try to provide abstraction for most popular message brokers, such as
   - [**RabbitMQ**]
 
 ## Limitations
-OpenMessaging allows to use in the same application several message brokers at a time. However
+OpenMessagingWrapper allows to use in the same application several message brokers at a time. However
  - you cannot use multiple instances of the same message broker; you can use ArtemisMQ **and** Kafka, but you cannot connect use multiple instances of ArtemisMQ.
  - you cannot use the same topic name twice, even if the topic resides in different message brokers.
 
 ## Configuration
-OpenMessaging can be configured manually or via appsettings.json. Configuration differs for each message broker, while the subsequent usage will be hidden by OpenMessaging framework. 
+OpenMessagingWrapper can be configured manually or via appsettings.json. Configuration differs for each message broker, while the subsequent usage will be hidden by OpenMessagingWrapper framework. 
 If you're using appsetting.json, then you just need to add configurations under the 'Messaging' tag:
 
 ``` json
@@ -88,7 +88,7 @@ builder.Services.AddArtemisServices(new ArtemisConfig()
 ```
 
 ## Choose and add a provider
-OpenMessaging manages allows you to add several message brokers, and simplify the message management.
+OpenMessagingWrapper manages allows you to add several message brokers, and simplify the message management.
 You just need to provide, for each message broker you are configuring
  - the topics/queues where you need a Producer (the object that *sends* messages)
  - the topics/queues where you need a Consumer (the object that *receive* messages), and the the class that will manage those messages. These class **must** implement IMessageConsumer.
@@ -133,7 +133,7 @@ Once configured, you can inject the `IMessageProducerFactory` instance that you'
 
 ## Receiving messages
 Receive a message could be quite a pain, depending on the specific broker implementation. 
-OpenMessaging simplifies message management, you just need to provide, while adding a Consumer, a class, implementing `IMessageConsumer`. 
+OpenMessagingWrapper simplifies message management, you just need to provide, while adding a Consumer, a class, implementing `IMessageConsumer`. 
 Whenever a message is available for the specified topic, the method ConsumeAsync will be triggered, providing you basic info about the message.
 You just need to specify if the message has been correctly processed (returning `MessageAction.Complete`), if it needs to be reprocessed (`MessageAction.Requeue`), or it should be discarded (`MessageAction.Reject`).
 
@@ -151,7 +151,7 @@ You just need to specify if the message has been correctly processed (returning 
 ## Bonus: infrastructure healthcheck
 Sometimes, can happen that you message broker can fail, disconnected, crash, or whatever. When this happens, your services need to be restarted. 
 If you're using a k8s cluster, you'll need to implement healthcheck for readiness and liveness, to tell your cluster when pods needs to be started again.
-OpenMessaging exploits the amazing features provided by Microsoft [HealthChecks](https://learn.microsoft.com/en-us/dotnet/api/microsoft.extensions.diagnostics.healthchecks?view=net-8.0) and adds some checks for the provided brokers and topics. You just need to build a simple liveness/readiness probe to use them
+OpenMessagingWrapper exploits the amazing features provided by Microsoft [HealthChecks](https://learn.microsoft.com/en-us/dotnet/api/microsoft.extensions.diagnostics.healthchecks?view=net-8.0) and adds some checks for the provided brokers and topics. You just need to build a simple liveness/readiness probe to use them
 
 ``` csharp
     [ApiController]
@@ -174,11 +174,11 @@ OpenMessaging exploits the amazing features provided by Microsoft [HealthChecks]
 ## Licensee
 Repository source code is available under MIT License, see license in the source.
 
-OpenMessaging uses the **confluent-kafka-dotnet** library, which is distributed under Apache 2.0 license:
+OpenMessagingWrapper uses the **confluent-kafka-dotnet** library, which is distributed under Apache 2.0 license:
 * [Official repository](https://github.com/confluentinc/confluent-kafka-dotnet)
 * [License](https://github.com/confluentinc/confluent-kafka-dotnet/blob/master/LICENSE)
   
-OpenMessaging uses the **Apache.NMS.ActiveMQ** library, which is distributed under Apache 2.0 license:
+OpenMessagingWrapper uses the **Apache.NMS.ActiveMQ** library, which is distributed under Apache 2.0 license:
 * [Official repository](https://github.com/apache/activemq-nms-openwire)
 * [License](https://github.com/apache/activemq-nms-openwire/blob/main/LICENSE.txt)
 
