@@ -10,7 +10,7 @@ Packages
 
 | Package | NuGet Stable | 
 | ------- | ------------ | 
-| [OpenSODA](https://github.com/thesharpninjas/Ninja.Sharp.OpenMessaging/) | [![OpenMessaging](https://img.shields.io/badge/nuget-v0.0.1-blue)](https://www.nuget.org/packages/Ninja.Sharp.OpenMessaging/)
+| [OpenMessaging](https://github.com/thesharpninjas/Ninja.Sharp.OpenMessaging/) | [![OpenMessaging](https://img.shields.io/badge/nuget-v0.0.1-blue)](https://www.nuget.org/packages/Ninja.Sharp.OpenMessaging/)
 
 Features
 --------
