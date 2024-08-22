@@ -15,7 +15,6 @@
 		<PackageTags>ArtemisMQ, Kafka</PackageTags>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/thesharpninjas/Ninja.Sharp.OpenMessaging</PackageProjectUrl>
 		<PackageIcon>icon.png</PackageIcon>
 		<RepositoryUrl>https://github.com/thesharpninjas/Ninja.Sharp.OpenMessaging</RepositoryUrl>
@@ -27,7 +26,6 @@
 		<PackageReference Include="Confluent.Kafka" Version="2.5.2" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.2" />
-		<PackageReference Include="ArtemisNetClient" Version="2.16.0" />
 		<PackageReference Include="ArtemisNetClient.Extensions.DependencyInjection" Version="2.16.0" />
 		<PackageReference Include="ArtemisNetClient.Extensions.Hosting" Version="2.16.0" />
 		<PackageReference Include="Apache.NMS.ActiveMQ" Version="2.1.0" />
@@ -62,15 +60,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="..\LICENSE.txt">
+		<None Include="..\..\LICENSE.txt">
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
 		</None>
-		<None Include="..\README.md">
+		<None Include="..\..\README.md">
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
 		</None>
-		<None Include="..\icon.png">
+		<None Include="..\..\icon.png">
 			<Pack>True</Pack>
 			<PackagePath>\</PackagePath>
 		</None>

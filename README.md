@@ -1,5 +1,5 @@
 
-OpenSODA - a .Net driver for Oracle SODA
+OpenMessaging - a .Net wrapper for message brokers
 ========================================
 Release Notes
 -------------
@@ -10,209 +10,164 @@ Packages
 
 | Package | NuGet Stable | 
 | ------- | ------------ | 
-| [OpenSODA](https://www.nuget.org/packages/Ninja.Sharp.OpenSODA/) | [![OpenSODA](https://img.shields.io/badge/nuget-v0.0.1-blue)](https://www.nuget.org/packages/OpenSODA/)
-| [OpenSODA.Driver.Rest](https://www.nuget.org/packages/Ninja.Sharp.OpenSODA.Driver.Rest/) | [![OpenSODA](https://img.shields.io/badge/nuget-v0.0.1-blue)](https://www.nuget.org/packages/Ninja.Sharp.OpenSODA.Driver.Rest/) | 
-| [OpenSODA.Driver.Sql.Native](https://www.nuget.org/packages/Ninja.Sharp.OpenSODA.Driver.Sql.Native/) | [![OpenSODA](https://img.shields.io/badge/nuget-v0.0.1-blue)](https://www.nuget.org/packages/Ninja.Sharp.OpenSODA.Driver.Sql.Native/) | 
-| [OpenSODA.Driver.Sql.Qbe](https://www.nuget.org/packages/Ninja.Sharp.OpenSODA.Driver.Sql.Qbe/) | [![OpenSODA](https://img.shields.io/badge/nuget-v0.0.1-blue)](https://www.nuget.org/packages/Ninja.Sharp.OpenSODA.Driver.Sql.Qbe/) | 
-
-
-Package Purposes:
-* OpenSODA
-  * The core library
-* OpenSODA.Driver.Rest
-  * Extension handlers for SODA Rest APIs
-* OpenSODA.Driver.Sql.Native
-  * Extension handlers for SODA using Oracle Sql providers
-* OpenSODA.Driver.Sql.Qbe
-  * Extension handlers for SODA using Oracle drivers
+| [OpenMessaging](https://github.com/thesharpninjas/Ninja.Sharp.OpenMessaging/) | [![OpenMessaging](https://img.shields.io/badge/nuget-v0.0.1-blue)](https://www.nuget.org/packages/Ninja.Sharp.OpenMessaging/)
 
 Features
 --------
-OpenSODA is a [NuGet library](https://www.nuget.org/packages/Ninja.Sharp.OpenSODA) that you can use to connect and manage entities provided by Oracle SODA (*Simple Oracle Document Access*).
-The library provides simple and efficient methods for saving, retrieveing and filtering your entities, with support for both synchronous and
-asynchronous data access.
+OpenMessaging is a [NuGet library](https://www.nuget.org/packages/Ninja.Sharp.OpenMessaging) that aims in simplifying usage for the most common messaging framework.
+The library encapsulates some behavior and common options for most frameworks, providing a simple management to rule them all via configuration.
 
-It provides multiple integration to SODA instances:
+Right now, it allows integration with these framework:
+ - [**Apache ArtemisMQ**](https://activemq.apache.org/components/artemis/): a next-generation message broker, based on the HornetQ code-base. The implementation is based on [ArtemisNetClient](https://havret.github.io/dotnet-activemq-artemis-client/docs/getting-started/) 
+ - [**Apache Kafka**]: Apache Kafka is an open-source distributed event streaming platform used by thousands of companies for high-performance data pipelines, streaming analytics, data integration, and mission-critical applications. The implementation is based on [Confluent .NET client](https://docs.confluent.io/kafka-clients/dotnet/current/overview.html)
 
-- via **REST APIs**: you can use Oracle Rest APIs to query your Oracle SODA installation.
-- via **QBE**: you can filter documents via query-by-example (QBE). This is the most efficient way to connect to SODA. However, it does not natively support serch via textcontains and search in document arrays
-- via **SQL**: you can always query your SODA database through SQL instructions
+Next steps:
+ we'll try to provide abstraction for most popular message brokers, such as
+  - [**Azure ServiceBus**]
+  - [**Azure StorageQueue**]
+  - [**Azure EventGrid**]
+  - [**Amazon MQ**]
+  - [**Amazon SQS**]
+  - [**Amazon SNS**]
+  - [**GCloud Pub/Sub**]
+  - [**RabbitMQ**]
+
+## Limitations
+OpenMessaging allows to use in the same application several message brokers at a time. However
+ - you cannot use multiple instances of the same message broker; you can use ArtemisMQ AND Kafka, but you cannot connect multiple instances of ArtemisMQ.
+ - you cannot use the same topic name twice, even if the topic resides in different message brokers.
 
 ## Configuration
-OpenSODA can be configured manually or via appsettings.json. Configuration differs for Rest and Sql implementation.
+OpenMessaging can be configured manually or via appsettings.json. Configuration differs for each message broker, while the subsequent usage will be hidden by OpenMessaging framework. 
 
-If you're using Rest APIs, then
+If you're using appsetting.json, then you just need to add configurations under the 'Messaging' tag:
 
 ``` json
 {
-  "Soda": {
-    "Host": "10.10.10.10",
-    "Username": "Username",
-    "Password": "Password",
-    "Schema": "Schema",
-    "IsSecured": true,
-    "Port": 8080,
-    "ServiceName": "ServiceName"
+  "Messaging": {
+    "Kafka": {
+        "Identifier": "myIdentifier",
+        "BootstrapServers": [
+          {
+            "Host": "myHost", 
+            "Port": 9092
+          }
+        ],
+        "SecurityProtocol": "SaslSsl", 
+        "UserName": "myUsername",
+        "Password": "myPassword",
+        "GroupId": "myGroupId",
+        "SaslMechanism": "ScramSha256"
+    },
+    "Artemis": {
+        "Identifier": "myIdentifier",
+        "Retries": 2,
+        "RetryWaitTime": 500,
+        "Endpoints": [
+          {
+            "Host": "myHost",
+            "Port": 61616,
+            "Username": "myUsername",
+            "Password": "myUsername",
+          }
+        ]
+    },
   }
 }
 ```
-otherwise, if you're using SQL (both native or QBE)
-``` json
-{
-  "Soda": {
-    "Host": "10.10.10.10",
-    "Username": "Username",
-    "Password": "Password",
-    "Schema": "Schema",
-    "Port": 1521,
-    "ServiceName": "ServiceName"
-  }
-}
+otherwise, if you're using manual configuration, you just need to add configurations when you add the requested services 
+``` csharp
+builder.Services.AddArtemisServices(new ArtemisConfig()
+    {
+        //...
+    });
 ```
 
 ## Choose and add a provider
-OpenSODA manages for you a simple implementation (*IDocumentDbProvider*) you can use to perform your queries.
-To inject a different implementation, you just have to add to your services the desired one
-
+OpenMessaging manages allows you to add several message brokers, and simplify the message management.
+You just need to provide, for each message broker you are configuring
+ - the topics/queues where you need a Producer (the object that *sends* messages)
+ - the topics/queues where you need a Consumer (the object that *receive* messages), and the the class that will manage those messages. These class **must** implement IMessageConsumer.
 
 ``` csharp
-services
-   //.AddOracleSodaRestServices(configuration)
-   //.AddOracleSodaSqlNativeServices(configuration)
-   .AddOracleSodaSqlQbeServices(configuration)
-   .BuildServiceProvider();
+builder.Services
+    .AddArtemisServices(builder.Configuration)
+    .AddProducer("myArtemisProducerTopic")
+    .AddConsumer<LoggerMqConsumer>("myArtemisConsumerTopic")
+    .Build();
+    
+builder.Services
+    .AddKafkaServices(builder.Configuration)
+    .AddProducer("myKafkaProducerTopic1")
+    .AddProducer("myKafkaProducerTopic2")
+    .AddProducer("myKafkaProducerTopic3")
+    .AddConsumer<LoggerMqConsumer>("myKafkaConsumerTopic1")
+    .AddConsumer<LoggerMqConsumer>("myKafkaConsumerTopic2")
+    .Build();
 ```
 
-- **AddOracleSodaRestServices**: adds an implementation of *IDocumentDbProvider* that uses Rest APIs. You'll need the *OpenSODA.Driver.Rest* package to inject this one.
-- **AddOracleSodaSqlNativeServices**: adds an implementation of *IDocumentDbProvider* that will perform queries in a SQL-like manner. You'll need *OpenSODA.Driver.Sql.Native* package to inject this one.
-*we suggest adding a global index to your Oracle SODA database prior to using this implementation*
-- **AddOracleSodaSqlQbeServices**: adds an implementation of *IDocumentDbProvider* that will perform queries using Oracle SODA *query-by-example* (QBE). You'll need the *OpenSODA.Driver.Sql.QBE* package to inject this one.
+## Sending messages
+Once configured, sending a message is quite easy. You do not need to know how the broker work, or which broker you need - you just need the destination topic/queue and the message you have to send.
+Once configured, you can inject the IMessageProducerFactory instance that you'll use to send a single message
 
-Whichever package you choose, the provided methods are the same, so feel free to change the provider and verify which one is the best for your use-case.
-
-## Creating a collection
-Before adding data to your database, you have to create a collection. A document *collection* contains *documents*. A SODA *collection* is analogous to an Oracle Database *table* or *view*.
-
-To create a collection, you have two ways:
- - you can provide the collection name
 ``` csharp
-  await sodaProvider.CreateCollectionIfNotExistsAsync("myCollection");
-```
- - or you can annotate an item with *CollectionAttribute*. The name provided in the attribute will be the collection name
-``` csharp
-  [Collection("myCollection")]
-  internal class TestObject
-  {
-      public string One { get; set; } = string.Empty;
-      public string Two { get; set; } = string.Empty;
-      public string Three { get; set; } = string.Empty;
-  }
-```
-``` csharp
-  await sodaProvider.CreateCollectionIfNotExistsAsync<TestObject>();
-```
-*We suggest you use the former method. Items you're going to persist must have the Collection attribute in order to be saved*.
-
-## Insert an element
-To add an element to a collection, first you need to annotate the class item with the Collection attribute
- ``` csharp
-  [Collection("myCollection")]
-  internal class TestObject
-  {
-      public string One { get; set; } = string.Empty;
-      public string Two { get; set; } = string.Empty;
-      public string Three { get; set; } = string.Empty;
-  }
-```
-*If you do not provide a collection name, and you do not annotate your model, the library will use the class name as collection*.
-
-Then, you can just
- ``` csharp
-  
-  private readonly IDocumentDbProvider sodaProvider = sodaProvider;
-
-  public async Task DoStuff()
-  {
-    Item<TestObject> item = await sodaProvider.UpsertAsync(new TestObject { One = value });
-  }
-```
-When you add an item, you will get your item back with some additional information added by SODA, such as the ID and the creation date.
-The retrieve task will use the provided ID.
-
-## Retrieve an element
-``` csharp
-  
-  private readonly IDocumentDbProvider sodaProvider = sodaProvider;
-
-  public async Task DoStuff()
-  {
-    Item<TestObject> item = await sodaProvider.UpsertAsync(new TestObject { One = value });
-    item = await sodaProvider.RetrieveAsync<TestObject>(item.Id);
-  }
-```
-
-## Retrieve data
-``` csharp
-  
-  private readonly IDocumentDbProvider sodaProvider = sodaProvider;
-
-  public async Task DoStuff()
-  {
-    var results = await sodaProvider.ListAsync<TestObject>(new Page
+    [ApiController]
+    [Route("[controller]")]
+    public class MyApiController(IMessageProducerFactory producerFactory) : ControllerBase
     {
-        ItemsPerPage = 10,
-        PageNumber = 1,
-        Ordering = Ordering.Descending,
-        OrderingPath = nameof(TestObject.One),
-    });
-  }
+        private readonly IMessageProducerFactory producerFactory = producerFactory;
+
+        [HttpPost("Send/{topic}")]
+        public async Task<string> Get([FromRoute]string topic, [FromBody]Tester payload)
+        {
+            var producer = producerFactory.Producer(topic);
+            var msgId = await producer.SendAsync(payload);
+            return msgId;
+        }
+    }
 ```
-## Delete data
+## Receiving messages
+Receive a message could be quite a pain, depending on the specific broker implementation. 
+OpenMessaging simplifies message management, you just need to provide, while adding a Consumer, a class, implementing IMessageConsumer. 
+Whenever a message is available for the specified topic, the method ConsumeAsync will be triggered, providing you basic info about the message.
+You just need to specify if the message has been correctly processed (returning MessageAction.Complete), if it needs to be reprocessed (MessageAction.Requeue), or it should be discarded (MessageAction.Reject).
+
 ``` csharp
-  
-  private readonly IDocumentDbProvider sodaProvider = sodaProvider;
-
-  public async Task DoStuff()
-  {
-    Item<TestObject> item = await sodaProvider.UpsertAsync(new TestObject { One = value });
-    await sodaProvider.DeleteAsync<TestObject>(item.Id);
-  }
+    public class LoggerMqConsumer(ILogger<LoggerMqConsumer> logger) : IMessageConsumer
+    {
+        public Task<MessageAction> ConsumeAsync(MqMessage message)
+        {
+            logger.LogWarning("Message consumed: {0}", message.Body);
+            return Task.FromResult(MessageAction.Complete);
+        }
+    }
 ```
 
-## Filtering
-To query your database, we provide a constructible query system using operands and data types.
+## Bonus: infrastructure healthcheck
+Sometimes, can happen that you message broker can fail, disconnected, crash, or whatever. When this happens, your services need to be restarted. 
+If you're using a k8s cluster, you'll need to implement healthcheck for readiness and liveness, to tell your cluster when pods needs to be started again.
+OpenMessaging exploits the amazing features provided by Microsoft [HealthChecks](https://learn.microsoft.com/en-us/dotnet/api/microsoft.extensions.diagnostics.healthchecks?view=net-8.0) and adds some checks for the provided brokers and topics. You just need to build a simple liveness/readiness probe to use them
+
 ``` csharp
-  
-  private readonly IDocumentDbProvider sodaProvider = sodaProvider;
-
-  public async Task DoStuff()
-  {
-    Query query = new();
-    query.With(new And()
-      .With(new OString(nameof(TestObject.One), item.Value.One))
-      .With(new OString(nameof(TestObject.Two), item.Value.Two))
-    );
-
-    var results = await sodaProvider.FilterAsync<TestObject>(query);   
-  }
+    [ApiController]
+    [Route("[controller]")]
+    public class MyApiController(HealthCheckService healthCheckService) : ControllerBase
+    {
+        private readonly HealthCheckService healthCheckService = healthCheckService;
+    
+        [HttpGet]
+        [Route("liveness")]
+        [Route("readiness")]
+        public async Task<IActionResult> Get()
+        {
+            HealthReport report = await healthCheckService.CheckHealthAsync();
+            return report.Status == HealthStatus.Healthy ? Ok(report) : StatusCode((int)HttpStatusCode.ServiceUnavailable, report);
+        }
+    }
 ```
 
-The current available operands are
- - and 
- - not 
- - or
 
-The current available primitives are
- - datetime 
- - int
- - string
- - upperString (*Oracle SODA is case sensitive*)
 
- More operands will be released in the future.
-
- ## Limitations
- Some queries could be highly inefficient: often SODA will perform a full table scan to retrieve some data.
- We suggest to manually add a global index if you're using Sql.Native provider, and to add partitioning and cluster indexes if you're using Sql.QBE.
 
  ## Contributing
 Thank you for considering to help out with the source code!
