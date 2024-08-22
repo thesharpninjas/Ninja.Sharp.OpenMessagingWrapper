@@ -108,14 +108,14 @@ namespace Ninja.Sharp.OpenMessaging.Providers.ArtemisMQ
 
         internal static async Task ConsumerHandlerAsync(Message message, IConsumer consumer, IServiceProvider serviceProvider, Type type, bool acceptIfInError)
         {
-            bool inError = false;
+            MessageAction result = MessageAction.Complete;
             try
             {
                 string messageString = message.GetBody<string>();
 
                 var selectedConsumer = serviceProvider.TryGetRequiredService(type) as IMessageConsumer;
 
-                await selectedConsumer!.ConsumeAsync(new IncomingMessage()
+                result = await selectedConsumer!.ConsumeAsync(new IncomingMessage()
                 {
                     Body = messageString,
                     Id = message.MessageId,
@@ -124,13 +124,26 @@ namespace Ninja.Sharp.OpenMessaging.Providers.ArtemisMQ
             }
             catch (Exception)
             {
-                inError = true;
+                result = MessageAction.Requeue;
             }
             finally
             {
-                if (!inError || acceptIfInError)
+                switch (result)
                 {
-                    await consumer.AcceptAsync(message);
+                    case MessageAction.Requeue:
+                        break;
+                    case MessageAction.Reject:
+                        consumer.Reject(message);
+                        break;
+                    case MessageAction.Error:
+                        if (acceptIfInError)
+                        {
+                            await consumer.AcceptAsync(message);
+                        }
+                        break;
+                    default:
+                        await consumer.AcceptAsync(message);
+                        break;
                 }
             }
         }

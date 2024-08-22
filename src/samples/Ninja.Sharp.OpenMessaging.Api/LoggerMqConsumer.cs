@@ -5,10 +5,10 @@ namespace Ninja.Sharp.OpenMessaging.Api
 {
     public class LoggerMqConsumer(ILogger<LoggerMqConsumer> logger) : IMessageConsumer
     {
-        public Task ConsumeAsync(IncomingMessage message)
+        public Task<MessageAction> ConsumeAsync(IncomingMessage message)
         {
             logger.LogWarning("Message consumed: {0}", message.Body);
-            return Task.CompletedTask;
+            return Task.FromResult(MessageAction.Complete);
         }
     }
 }

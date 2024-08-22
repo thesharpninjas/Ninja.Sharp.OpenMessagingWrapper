@@ -127,15 +127,18 @@ Once configured, you can inject the IMessageProducerFactory instance that you'll
     }
 ```
 ## Receiving messages
-Receive a message could be quite a pain, depending on the specific broker implementation. OpenMessaging simplifies message management, you just need to provide, while adding a Consumer, a class, implementing IMessageConsumer. Whenever a message is available for the specified topic, the method ConsumeAsync will be triggered, providing you basic info about the message
+Receive a message could be quite a pain, depending on the specific broker implementation. 
+OpenMessaging simplifies message management, you just need to provide, while adding a Consumer, a class, implementing IMessageConsumer. 
+Whenever a message is available for the specified topic, the method ConsumeAsync will be triggered, providing you basic info about the message.
+You just need to specify if the message has been correctly processed (returning MessageAction.Complete), if it needs to be reprocessed (MessageAction.Requeue), or it should be discarded (MessageAction.Reject).
 
 ``` csharp
-  public class LoggerMqConsumer(ILogger<LoggerMqConsumer> logger) : IMessageConsumer
+    public class LoggerMqConsumer(ILogger<LoggerMqConsumer> logger) : IMessageConsumer
     {
-        public Task ConsumeAsync(MqMessage message)
+        public Task<MessageAction> ConsumeAsync(MqMessage message)
         {
             logger.LogWarning("Message consumed: {0}", message.Body);
-            return Task.CompletedTask;
+            return Task.FromResult(MessageAction.Complete);
         }
     }
 ```

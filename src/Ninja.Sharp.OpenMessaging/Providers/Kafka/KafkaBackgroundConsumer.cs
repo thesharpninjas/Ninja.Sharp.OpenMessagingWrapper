@@ -20,36 +20,44 @@ namespace Ninja.Sharp.OpenMessaging.Providers.Kafka
             {
                 while (!stoppingToken.IsCancellationRequested)
                 {
-                    bool inError = false;
+                    MessageAction resultAction = MessageAction.Complete;
                     ConsumeResult<string, string> result = kafkaConsumer.Consume(stoppingToken);
                     if (result.Message != null)
                     {
                         try
                         {
-                            await consumer.ConsumeAsync(new IncomingMessage()
+                            resultAction = await consumer.ConsumeAsync(new IncomingMessage()
                             {
                                 Body = result.Message.Value,
                                 Id = result.Message.Key
                             });
                         }
-                        catch (Exception ex)
+                        catch (Exception)
                         {
-                            inError = true;
+                            resultAction = MessageAction.Error;
                         }
                         finally
                         {
-                            if (!inError || acceptIfError)
+                            switch (resultAction)
                             {
-                                kafkaConsumer.Commit(result);
+                                case MessageAction.Complete:
+                                    kafkaConsumer.Commit(result);
+                                    break;
+                                case MessageAction.Reject:
+                                    kafkaConsumer.Commit(result);
+                                    break;
+                                case MessageAction.Error:
+                                    if (acceptIfError)
+                                    {
+                                        kafkaConsumer.Commit(result);
+                                    }
+                                    break;
+                                default:       
+                                    break;
                             }
                         }
                     }
                 }
-            }
-            catch (Exception ex)
-            {
-                // TODO
-                throw;
             }
             finally
             {
