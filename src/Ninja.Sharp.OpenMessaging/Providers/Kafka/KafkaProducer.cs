@@ -21,7 +21,8 @@ namespace Ninja.Sharp.OpenMessaging.Providers.Kafka
             Message<string, string> kafkaMessage = new()
             {
                 Key = msgId,
-                Value = message
+                Value = message,
+                Headers = []
             };
             if (!string.IsNullOrWhiteSpace(identifier))
             {

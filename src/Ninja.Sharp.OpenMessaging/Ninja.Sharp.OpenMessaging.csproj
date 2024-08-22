@@ -19,6 +19,7 @@
 		<PackageProjectUrl>https://github.com/thesharpninjas/Ninja.Sharp.OpenMessaging</PackageProjectUrl>
 		<PackageIcon>icon.png</PackageIcon>
 		<RepositoryUrl>https://github.com/thesharpninjas/Ninja.Sharp.OpenMessaging</RepositoryUrl>
+		<UserSecretsId>84f0b134-4e90-4fec-9d51-21d20f52200d</UserSecretsId>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -30,6 +31,7 @@
 		<PackageReference Include="ArtemisNetClient.Extensions.DependencyInjection" Version="2.16.0" />
 		<PackageReference Include="ArtemisNetClient.Extensions.Hosting" Version="2.16.0" />
 		<PackageReference Include="Apache.NMS.ActiveMQ" Version="2.1.0" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
 		<PackageReference Include="microsoft.extensions.diagnostics.healthchecks" Version="8.0.6" />
 		<PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.Abstractions" Version="8.0.6" />
 	</ItemGroup>
