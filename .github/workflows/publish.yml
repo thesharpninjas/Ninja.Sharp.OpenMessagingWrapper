@@ -17,6 +17,8 @@ env:
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
   DOTNET_NOLOGO: true
   NuGetDirectory: ${{ github.workspace }}/nuget
+  TestsPath: src/tests/Ninja.Sharp.OpenMessagingWrapper.Tests/Ninja.Sharp.OpenMessagingWrapper.Tests.csproj
+  ProjectPath: src/Ninja.Sharp.OpenMessagingWrapper/Ninja.Sharp.OpenMessagingWrapper.csproj
 
 defaults:
   run:
@@ -35,7 +37,7 @@ jobs:
       uses: actions/setup-dotnet@v4
 
     # Create the NuGet package in the folder from the environment variable NuGetDirectory
-    - run: dotnet pack src/Ninja.Sharp.OpenMessagingWrapper/Ninja.Sharp.OpenMessagingWrapper.csproj --configuration Release --output ${{ env.NuGetDirectory }}
+    - run: dotnet pack  ${{ env.ProjectPath }} --configuration Release --output ${{ env.NuGetDirectory }}
 
     # Publish the NuGet package as an artifact, so they can be used in the following jobs
     - uses: actions/upload-artifact@v3
@@ -45,38 +47,42 @@ jobs:
         retention-days: 7
         path: ${{ env.NuGetDirectory }}/*.nupkg
 
-  # validate_nuget:
-  #   runs-on: ubuntu-latest
-  #   needs: [ create_nuget ]
-  #   steps:
-  #     # Install the .NET SDK indicated in the global.json file
-  #     - name: Setup .NET
-  #       uses: actions/setup-dotnet@v4
-
-  #     # Download the NuGet package created in the previous job
-  #     - uses: actions/download-artifact@v3
-  #       with:
-  #         name: nuget
-  #         path: ${{ env.NuGetDirectory }}
-
-  #     - name: Install nuget validator
-  #       run: dotnet tool update Meziantou.Framework.NuGetPackageValidation.Tool --global
-
-  #     # Validate metadata and content of the NuGet package
-  #     # https://www.nuget.org/packages/Meziantou.Framework.NuGetPackageValidation.Tool#readme-body-tab
-  #     # If some rules are not applicable, you can disable them
-  #     # using the --excluded-rules or --excluded-rule-ids option
-  #     - name: Validate package
-  #       run: meziantou.validate-nuget-package (Get-ChildItem "${{ env.NuGetDirectory }}/*.nupkg")
-
   run_test:
+    name: Run tests
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     - name: Setup .NET
       uses: actions/setup-dotnet@v4
     - name: Run tests
-      run: dotnet test src/tests/Ninja.Sharp.OpenMessagingWrapper.Tests/Ninja.Sharp.OpenMessagingWrapper.Tests.csproj --configuration Release
+      run: dotnet test  ${{ env.TestsPath }} --configuration Release
+
+  create_release:
+    # if: github.event_name == 'release'
+    name: Create Release
+    runs-on: ubuntu-latest
+    needs: [ 
+        deploy,
+        run_test,
+        create_nuget 
+    ]
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            Changes in this Release
+            - First Change
+            - Second Change
+          draft: false
+          prerelease: false
 
   deploy:
     # Publish only when creating a GitHub Release
@@ -85,8 +91,8 @@ jobs:
     # if: github.event_name == 'release'
     runs-on: ubuntu-latest
     needs: [ 
-        #validate_nuget, 
-        run_test 
+        run_test,
+        create_nuget
     ]
     steps:
       # Download the NuGet package created in the previous job
