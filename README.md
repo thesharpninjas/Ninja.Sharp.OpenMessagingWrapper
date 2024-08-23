@@ -13,11 +13,11 @@ Packages
 
 | Package | NuGet Stable | 
 | ------- | ------------ | 
-| [OpenMessagingWrapperWrapper](https://github.com/thesharpninjas/Ninja.Sharp.OpenMessagingWrapperWrapper/) | [![OpenMessagingWrapperWrapper](https://img.shields.io/badge/nuget-v0.0.1-blue)](https://www.nuget.org/packages/Ninja.Sharp.OpenMessagingWrapperWrapper)
+| [OpenMessagingWrapper](https://github.com/thesharpninjas/Ninja.Sharp.OpenMessagingWrapper/) | [![OpenMessagingWrapper](https://img.shields.io/badge/nuget-v0.0.1-blue)](https://www.nuget.org/packages/Ninja.Sharp.OpenMessagingWrapper)
 
 Features
 --------
-OpenMessagingWrapperWrapper is a [NuGet .NET library](https://www.nuget.org/packages/Ninja.Sharp.OpenMessagingWrapperWrapper) that aims in simplifying usage for the most common messaging framework.
+OpenMessagingWrapperWrapper is a [NuGet .NET library](https://www.nuget.org/packages/Ninja.Sharp.OpenMessagingWrapper) that aims in simplifying usage for the most common messaging framework.
 The library encapsulates some behavior and common options for most frameworks, providing a simple management to rule them all via configuration.
 
 Right now, it allows integration with these framework:
