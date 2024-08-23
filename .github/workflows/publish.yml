@@ -19,6 +19,7 @@ env:
   NuGetDirectory: ${{ github.workspace }}/nuget
   TestsPath: src/tests/Ninja.Sharp.OpenMessagingWrapper.Tests/Ninja.Sharp.OpenMessagingWrapper.Tests.csproj
   ProjectPath: src/Ninja.Sharp.OpenMessagingWrapper/Ninja.Sharp.OpenMessagingWrapper.csproj
+  Version: 0.0.3-alpha
 
 defaults:
   run:
@@ -109,7 +110,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Release ${{ github.ref }}
+          tag_name: ${{ env.Version }}
+          release_name: Release ${{ env.Version }}
           draft: false
           prerelease: false
