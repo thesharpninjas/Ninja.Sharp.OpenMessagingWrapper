@@ -1,10 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Ninja.Sharp.OpenMessagingWrapper.Factory;
 using Ninja.Sharp.OpenMessagingWrapper.Interfaces;
 using Ninja.Sharp.OpenMessagingWrapper.Providers.ArtemisMQ;
 using Ninja.Sharp.OpenMessagingWrapper.Providers.ArtemisMQ.Configuration;
-using Ninja.Sharp.OpenMessagingWrapper.Providers.Kafka;
-using Ninja.Sharp.OpenMessagingWrapper.Providers.Kafka.Configuration;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -16,6 +13,8 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IMessagingBuilder AddArtemisServices(this IServiceCollection services, ArtemisConfig config)
         {
             services.AddCommonServices();
+            services.AddSingleton<IArtemisMqClient, ArtemisMqClient>();
+
             return new ArtemisMqBuilder(services, config);
         }
 

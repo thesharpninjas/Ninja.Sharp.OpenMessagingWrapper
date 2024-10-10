@@ -9,7 +9,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Configuration.AddUserSecrets(typeof(Program).Assembly);
 
-string artemisTopic = "artemisTopic";
+string artemisTopic = "AB02635.AS.TrasfOmnia";
 string kafkaTopic = "kafkaTopic";
 
 builder.Services
@@ -18,11 +18,11 @@ builder.Services
     .AddConsumer<LoggerMqConsumer>(artemisTopic)
     .Build();
 
-builder.Services
-    .AddKafkaServices(builder.Configuration)
-    .AddProducer(kafkaTopic)
-    .AddConsumer<LoggerMqConsumer>(kafkaTopic)
-    .Build();
+//builder.Services
+//    .AddKafkaServices(builder.Configuration)
+//    .AddProducer(kafkaTopic)
+//    .AddConsumer<LoggerMqConsumer>(kafkaTopic)
+//    .Build();
 
 var app = builder.Build();
 

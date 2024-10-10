@@ -39,7 +39,7 @@ namespace Ninja.Sharp.OpenMessagingWrapper.Providers.ArtemisMQ.HealthCheck
                 }
                 catch (Exception)
                 {
-                    return new HealthCheckResult(HealthStatus.Unhealthy, $"Error while connectiong to {endpoint.Host}.");
+                    return new HealthCheckResult(HealthStatus.Unhealthy, $"Error while connecting to {endpoint.Host}.");
                 }
             }
             if (maxMilliseconds > 5000)

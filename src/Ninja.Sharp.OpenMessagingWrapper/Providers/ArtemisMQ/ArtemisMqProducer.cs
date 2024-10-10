@@ -1,20 +1,22 @@
-﻿using Ninja.Sharp.OpenMessagingWrapper.Interfaces;
-using Ninja.Sharp.OpenMessagingWrapper.Providers.ArtemisMQ.Configuration;
+﻿using ActiveMQ.Artemis.Client;
+using Ninja.Sharp.OpenMessagingWrapper.Interfaces;
+using Ninja.Sharp.OpenMessagingWrapper.Model.Enums;
 
 namespace Ninja.Sharp.OpenMessagingWrapper.Providers.ArtemisMQ
 {
-    internal class ArtemisMqProducer(ArtemisMqMessageProducer producer, string topic, ArtemisConfig artemisConfig) : IMessageProducer
+    internal class ArtemisMqProducer(IArtemisMqClient client, string address, Channel type, string identifier)
+        : ArtemisMqPublisher, IMessageProducer
     {
-        private readonly ArtemisMqMessageProducer producer = producer;
-        private readonly string topic = topic;
-        private readonly ArtemisConfig artemisConfig = artemisConfig;
+        private IAnonymousProducer? producer;
 
         public async Task<string> SendAsync(string message)
         {
             try
             {
-                string identifier = artemisConfig.Identifier;
-                return await producer.PublishAsync(message, topic, identifier);
+                if (producer is null || !client.IsConnected)
+                    producer = await client.CreateAnonymousProducer();
+
+                return await PublishAsync(producer, message, address, type, identifier);
             }
             catch (Exception ex)
             {
@@ -22,6 +24,6 @@ namespace Ninja.Sharp.OpenMessagingWrapper.Providers.ArtemisMQ
             }
         }
 
-        public string Topic => topic;
+        public string Topic => address;
     }
 }

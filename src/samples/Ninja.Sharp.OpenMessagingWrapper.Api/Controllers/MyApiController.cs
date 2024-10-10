@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Ninja.Sharp.OpenMessagingWrapper.Extensions;
 using Ninja.Sharp.OpenMessagingWrapper.Interfaces;
 using System.Net;
 

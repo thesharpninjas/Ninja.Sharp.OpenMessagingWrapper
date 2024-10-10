@@ -26,8 +26,6 @@
 		<PackageReference Include="Confluent.Kafka" Version="2.5.2" />
 		<PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.2" />
-		<PackageReference Include="ArtemisNetClient.Extensions.DependencyInjection" Version="2.16.0" />
-		<PackageReference Include="ArtemisNetClient.Extensions.Hosting" Version="2.16.0" />
 		<PackageReference Include="Apache.NMS.ActiveMQ" Version="2.1.0" />
 		<PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0" />
 		<PackageReference Include="microsoft.extensions.diagnostics.healthchecks" Version="8.0.8" />
